@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lygo's Land</title>
+    <title>Lygo's Land - Fixed</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     
     <style>
@@ -14,7 +14,6 @@
             color: #0f0;
             font-family: 'Creepster', cursive;
             text-align: center;
-            padding: clamp(10px, 2vw, 20px);
             min-height: 100vh;
             margin: 0;
             display: flex;
@@ -30,10 +29,9 @@
         }
 
         .section {
-            padding: clamp(20px, 4vw, 50px);
+            padding: 20px;
             border: 2px solid #0f0;
-            margin: clamp(10px, 2vw, 20px);
-            transition: all 0.3s ease-in-out;
+            margin: 10px;
             box-shadow: 0 0 10px #0f0;
         }
 
@@ -54,34 +52,6 @@
             100% { transform: translateY(0px) scale(1); }
         }
 
-        /* Creepy Eyes */
-        .eye-container {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: url('https://raw.githubusercontent.com/sirlygo/LygosLand/main/assets/Eyes.png') no-repeat center;
-            background-size: cover;
-            transition: transform 0.2s ease-out;
-        }
-
-        /* Glowing Text on Hover */
-        h2:hover, h3:hover {
-            text-shadow: 0 0 20px red, 0 0 40px lime;
-            transition: text-shadow 0.3s ease-in-out;
-        }
-
-        /* Floating Cursors */
-        .floating-cursor {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: red;
-            border-radius: 50%;
-            box-shadow: 0 0 10px red;
-            transition: transform 0.1s linear;
-            pointer-events: none;
-        }
-
         /* Mute Button */
         .mute-button {
             position: fixed;
@@ -95,28 +65,11 @@
             cursor: pointer;
             border-radius: 50%;
             transition: all 0.3s;
+            z-index: 100;
         }
         .mute-button:hover {
             background: lime;
             color: black;
-        }
-
-        /* Jumpscare ERROR Screen */
-        #errorScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: red;
-            color: white;
-            font-size: 4rem;
-            font-weight: bold;
-            text-align: center;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
         }
     </style>
 </head>
@@ -129,13 +82,42 @@
     <!-- Mute Button -->
     <button id="muteToggle" class="mute-button">🔊</button>
 
-    <!-- Floating Cursors -->
-    <div class="floating-cursor"></div>
-    <div class="floating-cursor"></div>
-    <div class="floating-cursor"></div>
+    <!-- Navigation -->
+    <nav class="container-fluid">
+        <ul>
+            <li><strong>Lygo's Land</strong></li>
+        </ul>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Gallery</a></li>
+            <li><a href="#" role="button">Contact</a></li>
+        </ul>
+    </nav>
 
-    <!-- Error Flash Screen -->
-    <div id="errorScreen">ERROR 404 - YOU SHOULDN’T BE HERE</div>
+    <main class="container">
+        <div class="grid">
+            <section>
+                <hgroup>
+                    <h2>Welcome to Lygo's Land</h2>
+                    <h3>A world of eerie wonders</h3>
+                </hgroup>
+                <figure>
+                    <video src="https://i.imgur.com/5KMgrJb.mp4" autoplay loop muted playsinline></video>
+                </figure>
+            </section>
+        </div>
+
+        <div class="grid">
+            <div class="section"><h3>Bots</h3><p>Enter the darkness...</p></div>
+            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
+            <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
+            <div class="section"><h3>Help</h3><p>Escape or embrace?</p></div>
+        </div>
+    </main>
+
+    <footer class="container">
+        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
+    </footer>
 
     <script>
         document.getElementById('bgSound').volume = 0.3;
@@ -155,7 +137,7 @@
             muteButton.textContent = audio.muted ? "🔇" : "🔊";
         });
 
-        // Floating Ghosts
+        // Floating Ghosts (Safe Implementation)
         function createGhosts(num) {
             for (let i = 0; i < num; i++) {
                 let ghost = document.createElement("div");
@@ -166,51 +148,9 @@
             }
         }
 
-        // Floating Eyes
-        function createEyes(num) {
-            for (let i = 0; i < num; i++) {
-                let eye = document.createElement("div");
-                eye.classList.add("eye-container");
-                eye.style.left = Math.random() * window.innerWidth + "px";
-                eye.style.top = Math.random() * window.innerHeight + "px";
-                document.body.appendChild(eye);
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
-            createGhosts(5);
-            createEyes(3);
-
-            document.addEventListener("mousemove", (e) => {
-                document.querySelectorAll(".eye-container").forEach(eye => {
-                    let x = e.clientX - eye.offsetLeft;
-                    let y = e.clientY - eye.offsetTop;
-                    let angle = Math.atan2(y, x);
-                    eye.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
-                });
-            });
+            createGhosts(5); // Adds 5 ghosts safely
         });
-
-        // Cursor Trail Effect
-        document.addEventListener("mousemove", (e) => {
-            let i = 0;
-            document.querySelectorAll(".floating-cursor").forEach(cursor => {
-                setTimeout(() => {
-                    cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-                }, i * 100);
-                i++;
-            });
-        });
-
-        // Random Jumpscare Flash
-        function flashErrorScreen() {
-            document.getElementById("errorScreen").style.display = "flex";
-            setTimeout(() => {
-                document.getElementById("errorScreen").style.display = "none";
-            }, 500);
-        }
-
-        setInterval(flashErrorScreen, Math.random() * (90000 - 40000) + 40000);
     </script>
 </body>
 </html>
