@@ -37,6 +37,29 @@
             }
         }
 
+        /* Bat trail animation */
+        .bat-trail {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background-image: url('https://cur.cursors-4u.net/games/gam-10/gam929.png');
+            background-size: contain;
+            pointer-events: none;
+            animation: fly-trail 1s ease-out forwards;
+        }
+
+        @keyframes fly-trail {
+            0% {
+                opacity: 1;
+                transform: scale(1) translate(-50%, -50%);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.5) translate(-50%, -50%);
+            }
+        }
+
+        /* Ensure animations are properly scaled for mobile and desktop */
         body {
             background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
             background-size: cover;
@@ -49,6 +72,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden;
         }
 
         main {
@@ -130,11 +154,40 @@
         .sound-toggle:hover {
             box-shadow: 0 0 10px #0f0;
         }
+
+        /* Media Queries for Desktop */
+        @media (min-width: 768px) {
+            .bat {
+                animation: fly 0.5s steps(2) infinite;
+            }
+
+            /* Additional styles for Desktop */
+            body {
+                font-size: 1rem;
+                padding: 2rem;
+            }
+
+            .sound-toggle {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            .bat {
+                animation: fly 0.5s steps(2) infinite;
+            }
+
+            body {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- The Bat element that follows the cursor -->
+    <!-- Bat element that follows the cursor -->
     <div class="bat" id="bat"></div>
 
     <audio id="bgSound" loop>
@@ -161,6 +214,23 @@
             const bat = document.getElementById('bat');
             bat.style.left = e.pageX + 'px';
             bat.style.top = e.pageY + 'px';
+        });
+
+        // Easter Egg: Bat trail effect on click
+        document.addEventListener('click', function(e) {
+            // Create a new bat trail
+            const trail = document.createElement('div');
+            trail.classList.add('bat-trail');
+            document.body.appendChild(trail);
+
+            // Set the trail's position based on the mouse click
+            trail.style.left = e.pageX + 'px';
+            trail.style.top = e.pageY + 'px';
+
+            // Remove the trail after animation (1s)
+            setTimeout(() => {
+                trail.remove();
+            }, 1000);
         });
     </script>
 
