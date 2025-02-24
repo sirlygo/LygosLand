@@ -6,13 +6,13 @@
     <title>Lygo's Land</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
         
         body {
             background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: #0f0;
-            font-family: 'Creepster', cursive;
+            font-family: 'Roboto', sans-serif;
             text-align: center;
             padding: clamp(10px, 2vw, 20px);
             min-height: 100vh;
@@ -51,6 +51,11 @@
             cursor: pointer;
             background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
+        }
+        .section:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px red, 0 0 20px #0f0;
+            filter: blur(2px);
         }
         .section h3 {
             background-color: rgba(0, 0, 0, 0.7);
@@ -109,35 +114,46 @@
     </script>
     
     <main class="container">
-        <div class="grid">
+        <div class="grid" style="align-items: stretch;">
             <section>
-                <hgroup>
-                    <h2 style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Welcome to Lygo's Land</h2>
-                    <h3 style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">A world of eerie wonders</h3>
-                </hgroup>
+                <hgroup style="background-color: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 5px; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 5px solid #0f0; box-shadow: 0 0 20px #0f0;">
+    <h2>Welcome to Lygo's Land</h2>
+    <h3>A world of eerie wonders</h3>
+</hgroup>
                 <figure>
-                    <video src="https://i.imgur.com/5KMgrJb.mp4" autoplay loop muted playsinline></video>
+                    <video src="https://i.imgur.com/5KMgrJb.mp4" autoplay loop muted playsinline style="width: 100%; max-width: 800px; height: auto; border: 5px solid #0f0; box-shadow: 0 0 20px #0f0;"></video>
                 </figure>
             </section>
         </div>
         <div class="grid">
-            <div class="section" onclick="window.location.href='bots.html'">
+            <div class="section" style="display: flex; flex-direction: column; justify-content: center; height: 100%; min-height: 120px;" style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;" onclick="window.location.href='bots.html'">
                 <h3>Bots</h3>
-                <p>Enter the darkness...</p>
+                <p style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Enter the darkness...</p>
             </div>
             <div class="section" onclick="window.location.href='profiles.html'">
                 <h3>Profiles</h3>
-                <p>Whispers in the night...</p>
+                <p style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Whispers in the night...</p>
             </div>
             <div class="section" onclick="window.location.href='about.html'">
                 <h3>About</h3>
-                <p>Neon blood drips...</p>
+                <p style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Neon blood drips...</p>
             </div>
             <div class="section" onclick="window.location.href='help.html'">
                 <h3>Help</h3>
-                <p>Escape or embrace?</p>
+                <p style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Escape or embrace?</p>
             </div>
         </div>
+    <section>
+            <hgroup style="background-color: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 5px; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 5px solid #0f0; box-shadow: 0 0 20px #0f0;">
+    <h2>Stay Updated</h2>
+    <h3>Subscribe for more eerie adventures</h3>
+</hgroup>
+            <form class="grid">
+                <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required style="border: 2px solid #0f0; box-shadow: 0 0 10px #0f0; padding: 5px; border-radius: 5px;" />
+                <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required style="border: 2px solid #0f0; box-shadow: 0 0 10px #0f0; padding: 5px; border-radius: 5px;" />
+                <button type="submit" style="background-color: #0f0; color: black;" onclick="event.preventDefault()">Subscribe</button>
+            </form>
+        </section>
     </main>
 </body>
 </html>
