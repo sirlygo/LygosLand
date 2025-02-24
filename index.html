@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lygo's Land - Fixed</title>
+    <title>Lygo's Land - Fully Fixed</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     
     <style>
@@ -21,7 +21,11 @@
             overflow: hidden;
         }
 
-        main { flex: 1; }
+        main {
+            flex: 1;
+            position: relative; /* Fix clicking issue */
+            z-index: 10; /* Ensure it stays on top */
+        }
 
         h1 {
             font-size: 3rem;
@@ -33,6 +37,10 @@
             border: 2px solid #0f0;
             margin: 10px;
             box-shadow: 0 0 10px #0f0;
+            position: relative; /* Ensures it appears above floating elements */
+            z-index: 15; /* Higher than ghosts */
+            background: rgba(0, 0, 0, 0.8); /* Slight transparency */
+            pointer-events: auto; /* Ensures clicks are possible */
         }
 
         /* Floating Ghosts */
@@ -44,7 +52,7 @@
             background-size: cover;
             opacity: 0.7;
             animation: floatGhosts 5s infinite ease-in-out alternate;
-            pointer-events: none; /* FIX: Ghosts won't block clicks */
+            pointer-events: none; /* Fix: Ghosts won't block clicks */
         }
 
         @keyframes floatGhosts {
@@ -152,6 +160,13 @@
         document.addEventListener("DOMContentLoaded", () => {
             createGhosts(5); // Adds 5 ghosts safely
         });
+
+        // Debug: Outline all elements to find hidden blockers
+        function debugBorders() {
+            document.querySelectorAll('*').forEach(el => {
+                el.style.border = '1px solid red';
+            });
+        }
     </script>
 </body>
 </html>
