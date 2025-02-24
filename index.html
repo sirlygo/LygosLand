@@ -95,6 +95,20 @@
                 soundButton.textContent = '🔊';
             }
         });
+
+        document.addEventListener("mousemove", function(event) {
+            let trail = document.createElement("div");
+            trail.style.position = "absolute";
+            trail.style.left = event.pageX + "px";
+            trail.style.top = event.pageY + "px";
+            trail.style.width = "10px";
+            trail.style.height = "10px";
+            trail.style.background = "red";
+            trail.style.borderRadius = "50%";
+            trail.style.boxShadow = "0 0 10px red";
+            document.body.appendChild(trail);
+            setTimeout(() => { trail.remove(); }, 200);
+        });
     </script>
     
     <main class="container">
@@ -127,7 +141,7 @@
                 <p>Escape or embrace?</p>
             </div>
         </div>
-        <section>
+    <section>
             <hgroup>
                 <h2>Stay Updated</h2>
                 <h3 style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Subscribe for more eerie adventures</h3>
