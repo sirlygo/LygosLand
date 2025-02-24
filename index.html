@@ -37,25 +37,6 @@
             box-shadow: 0 0 10px #0f0;
         }
 
-        .grid { gap: clamp(10px, 2vw, 20px); }
-
-        h1, h2, h3 {
-            font-size: clamp(2rem, 5vw, 3rem);
-        }
-
-        video {
-            max-width: 100%;
-            height: auto;
-            border: 5px solid red;
-            box-shadow: 0 0 15px red;
-        }
-
-        nav, footer {
-            background: #111;
-            padding: 10px;
-            border-bottom: 2px solid red;
-        }
-
         /* Floating Ghosts */
         .ghost {
             position: absolute;
@@ -73,24 +54,6 @@
             100% { transform: translateY(0px) scale(1); }
         }
 
-        /* Smoke Effect */
-        .smoke {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: url('https://raw.githubusercontent.com/sirlygo/LygosLand/main/assets/Smoke.png') repeat-x;
-            opacity: 0.2;
-            animation: smokeMove 20s linear infinite;
-        }
-
-        @keyframes smokeMove {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(100%); }
-        }
-
         /* Creepy Eyes */
         .eye-container {
             position: absolute;
@@ -98,6 +61,62 @@
             height: 50px;
             background: url('https://raw.githubusercontent.com/sirlygo/LygosLand/main/assets/Eyes.png') no-repeat center;
             background-size: cover;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Glowing Text on Hover */
+        h2:hover, h3:hover {
+            text-shadow: 0 0 20px red, 0 0 40px lime;
+            transition: text-shadow 0.3s ease-in-out;
+        }
+
+        /* Floating Cursors */
+        .floating-cursor {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            border-radius: 50%;
+            box-shadow: 0 0 10px red;
+            transition: transform 0.1s linear;
+            pointer-events: none;
+        }
+
+        /* Mute Button */
+        .mute-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: black;
+            color: lime;
+            border: 2px solid lime;
+            font-size: 20px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .mute-button:hover {
+            background: lime;
+            color: black;
+        }
+
+        /* Jumpscare ERROR Screen */
+        #errorScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: red;
+            color: white;
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -107,62 +126,47 @@
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- Mute Button -->
+    <button id="muteToggle" class="mute-button">🔊</button>
+
+    <!-- Floating Cursors -->
+    <div class="floating-cursor"></div>
+    <div class="floating-cursor"></div>
+    <div class="floating-cursor"></div>
+
+    <!-- Error Flash Screen -->
+    <div id="errorScreen">ERROR 404 - YOU SHOULDN’T BE HERE</div>
+
     <script>
         document.getElementById('bgSound').volume = 0.3;
-    </script>
 
-    <nav class="container-fluid">
-        <ul>
-            <li><strong>Lygo's Land</strong></li>
-        </ul>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Gallery</a></li>
-            <li><a href="#" role="button">Contact</a></li>
-        </ul>
-    </nav>
+        // Mute Button Logic
+        const audio = document.getElementById("bgSound");
+        const muteButton = document.getElementById("muteToggle");
 
-    <main class="container">
-        <div class="grid">
-            <section>
-                <hgroup>
-                    <h2>Welcome to Lygo's Land</h2>
-                    <h3>A world of eerie wonders</h3>
-                </hgroup>
-                <figure>
-                    <video src="https://i.imgur.com/5KMgrJb.mp4" autoplay loop muted playsinline></video>
-                </figure>
-            </section>
-        </div>
+        if (localStorage.getItem("muted") === "true") {
+            audio.muted = true;
+            muteButton.textContent = "🔇";
+        }
 
-        <div class="grid">
-            <div class="section"><h3>Bots</h3><p>Enter the darkness...</p></div>
-            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
-            <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
-            <div class="section"><h3>Help</h3><p>Escape or embrace?</p></div>
-        </div>
-    </main>
+        muteButton.addEventListener("click", () => {
+            audio.muted = !audio.muted;
+            localStorage.setItem("muted", audio.muted);
+            muteButton.textContent = audio.muted ? "🔇" : "🔊";
+        });
 
-    <footer class="container">
-        <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
-    </footer>
-
-    <!-- Smoke Effect -->
-    <div class="smoke"></div>
-
-    <!-- JavaScript for Ghosts, Eyes & Cursor Tracking -->
-    <script>
+        // Floating Ghosts
         function createGhosts(num) {
             for (let i = 0; i < num; i++) {
                 let ghost = document.createElement("div");
                 ghost.classList.add("ghost");
                 ghost.style.left = Math.random() * window.innerWidth + "px";
                 ghost.style.top = Math.random() * (window.innerHeight - 100) + "px";
-                ghost.style.animationDuration = Math.random() * 3 + 4 + "s";
                 document.body.appendChild(ghost);
             }
         }
 
+        // Floating Eyes
         function createEyes(num) {
             for (let i = 0; i < num; i++) {
                 let eye = document.createElement("div");
@@ -174,19 +178,39 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            createGhosts(5);  // Add 5 floating ghosts
-            createEyes(3);    // Add 3 pairs of eyes
+            createGhosts(5);
+            createEyes(3);
 
             document.addEventListener("mousemove", (e) => {
                 document.querySelectorAll(".eye-container").forEach(eye => {
                     let x = e.clientX - eye.offsetLeft;
                     let y = e.clientY - eye.offsetTop;
                     let angle = Math.atan2(y, x);
-                    let rotateDeg = (angle * (180 / Math.PI));
-                    eye.style.transform = `rotate(${rotateDeg}deg)`;
+                    eye.style.transform = `rotate(${angle * (180 / Math.PI)}deg)`;
                 });
             });
         });
+
+        // Cursor Trail Effect
+        document.addEventListener("mousemove", (e) => {
+            let i = 0;
+            document.querySelectorAll(".floating-cursor").forEach(cursor => {
+                setTimeout(() => {
+                    cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+                }, i * 100);
+                i++;
+            });
+        });
+
+        // Random Jumpscare Flash
+        function flashErrorScreen() {
+            document.getElementById("errorScreen").style.display = "flex";
+            setTimeout(() => {
+                document.getElementById("errorScreen").style.display = "none";
+            }, 500);
+        }
+
+        setInterval(flashErrorScreen, Math.random() * (90000 - 40000) + 40000);
     </script>
 </body>
 </html>
