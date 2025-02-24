@@ -8,9 +8,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-        /* Custom Flying Bat Cursor */
-        * { 
-            cursor: none; /* Hide default cursor */
+        /* Hide the default cursor */
+        * {
+            cursor: none;
         }
 
         /* Bat animation */
@@ -19,7 +19,7 @@
             width: 48px;
             height: 48px;
             background-image: url('https://cur.cursors-4u.net/games/gam-10/gam929.png');
-            background-size: cover;
+            background-size: contain;
             pointer-events: none;
             animation: fly 0.5s steps(2) infinite;
             transform-origin: center;
@@ -29,13 +29,7 @@
             0% {
                 transform: translate(-50%, -50%) rotate(0deg);
             }
-            25% {
-                transform: translate(-50%, -60%) rotate(20deg);
-            }
             50% {
-                transform: translate(-50%, -70%) rotate(40deg);
-            }
-            75% {
                 transform: translate(-50%, -60%) rotate(20deg);
             }
             100% {
@@ -43,8 +37,8 @@
             }
         }
 
-        /* Other styles remain the same */
-        body { 
+        /* Body and other styles */
+        body {
             background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: #0f0;
@@ -140,13 +134,15 @@
     </style>
 </head>
 <body>
-    <!-- The Bat animation element -->
+
+    <!-- Bat that follows the cursor -->
     <div class="bat" id="bat"></div>
 
     <audio id="bgSound" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
     <button id="soundToggle" class="sound-toggle">🔊</button>
+
     <script>
         const audio = document.getElementById('bgSound');
         const soundButton = document.getElementById('soundToggle');
@@ -168,7 +164,7 @@
             bat.style.top = e.pageY + 'px';
         });
     </script>
-    
+
     <main class="container">
         <div class="grid" style="align-items: stretch;">
             <section>
