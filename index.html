@@ -18,13 +18,16 @@
             margin: 0;
             display: flex;
             flex-direction: column;
+            cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
         }
-        main {
-            flex: 1;
-        }
-        h1 {
-            font-size: 3rem;
+        main { flex: 1; }
+        h1, h2, h3 {
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
+            animation: glitch 1s infinite alternate;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px red; }
+            100% { text-shadow: -2px -2px #0f0; }
         }
         .section {
             padding: clamp(20px, 4vw, 50px);
@@ -33,22 +36,20 @@
             transition: all 0.3s ease-in-out;
             box-shadow: 0 0 10px #0f0;
             height: calc(100% - clamp(20px, 4vw, 40px));
+            position: relative;
+            animation: float 3s infinite ease-in-out;
+            cursor: pointer;
         }
-        .grid {
-            gap: clamp(10px, 2vw, 20px);
-        }
-        h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-        }
-        h2 {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-        }
-        h3 {
-            font-size: clamp(1.2rem, 3vw, 2rem);
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(5px); }
+            100% { transform: translateY(0px); }
         }
         .section:hover {
             background: rgba(0, 255, 0, 0.2);
             box-shadow: 0 0 20px red;
+            transform: scale(1.05);
+            filter: blur(1px);
         }
         video {
             max-width: 100%;
@@ -56,36 +57,28 @@
             border: 5px solid red;
             box-shadow: 0 0 15px red;
         }
-        nav {
-            background: #111;
-            padding: 10px;
-            border-bottom: 2px solid red;
-        }
-        footer {
-            margin-top: 40px;
-            padding: 10px;
-            background: #111;
-            border-top: 2px solid red;
+        .easter-egg {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: black;
+            color: red;
+            padding: 20px;
+            border: 2px solid red;
+            box-shadow: 0 0 10px red;
+            font-size: 2rem;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
-    <audio id="bgSound" loop autoplay>
+    <audio id="bgSound" loop muted>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
-    <script>
-        document.getElementById('bgSound').volume = 0.3;
-    </script>
-    <nav class="container-fluid">
-        <ul>
-            <li><strong>Lygo's Land</strong></li>
-        </ul>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Gallery</a></li>
-            <li><a href="#" role="button">Contact</a></li>
-        </ul>
-    </nav>
+    <button id="soundToggle" class="sound-toggle">🔊</button>
+    
     <main class="container">
         <div class="grid">
             <section>
@@ -100,26 +93,23 @@
         </div>
         <div class="grid">
             <div class="section"><h3>Bots</h3><p>Enter the darkness...</p></div>
-            <div class="section"><h3>Profiles 2</h3><p>Whispers in the night...</p></div>
+            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
             <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
-            <div class="section"><h3>Help 4</h3><p>Escape or embrace?</p></div>
+            <div class="section"><h3>Help</h3><p>Escape or embrace?</p></div>
         </div>
+        <section>
+            <hgroup>
+                <h2>Stay Updated</h2>
+                <h3>Subscribe for more eerie adventures</h3>
+            </hgroup>
+            <form class="grid">
+                <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required />
+                <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required />
+                <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+            </form>
+        </section>
     </main>
-    <section aria-label="Subscribe example">
-        <div class="container">
-            <article>
-                <hgroup>
-                    <h2>Stay Updated</h2>
-                    <h3>Subscribe for more eerie adventures</h3>
-                </hgroup>
-                <form class="grid">
-                    <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required />
-                    <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required />
-                    <button type="submit" onclick="event.preventDefault()">Subscribe</button>
-                </form>
-            </article>
-        </div>
-    </section>
+    
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
     </footer>
