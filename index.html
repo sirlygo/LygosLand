@@ -29,19 +29,19 @@
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
         }
 
-        /* 🔥 Fix for Sections Not Being Clickable */
+        /* ✅ Fix for Sections Being Clickable */
         .section {
-            position: relative; /* Ensures sections are on top */
-            z-index: 10; /* Keeps them above floating elements */
-            background: rgba(0, 0, 0, 0.9); /* Ensures visibility */
+            position: relative; /* Makes sure it's above ghosts */
+            z-index: 10; /* Keeps it above other elements */
+            background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border: 2px solid #0f0;
             margin: 10px;
             box-shadow: 0 0 10px #0f0;
-            pointer-events: auto; /* Forces sections to accept clicks */
+            pointer-events: auto; /* Allows user to click */
         }
 
-        /* 🔥 Floating Ghosts */
+        /* ✅ Floating Ghosts */
         .ghost {
             position: absolute;
             width: 80px;
@@ -59,7 +59,7 @@
             100% { transform: translateY(0px) scale(1); }
         }
 
-        /* 🔊 Mute Button */
+        /* ✅ Mute Button */
         .mute-button {
             position: fixed;
             bottom: 20px;
@@ -81,15 +81,15 @@
     </style>
 </head>
 <body>
-    <!-- Background Audio -->
+    <!-- ✅ Background Audio -->
     <audio id="bgSound" loop autoplay>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- 🔊 Mute Button -->
+    <!-- ✅ Mute Button -->
     <button id="muteToggle" class="mute-button">🔊</button>
 
-    <!-- 🔥 Navigation -->
+    <!-- ✅ Navigation -->
     <nav class="container-fluid">
         <ul>
             <li><strong>Lygo's Land</strong></li>
@@ -101,7 +101,7 @@
         </ul>
     </nav>
 
-    <!-- 🔥 Main Content -->
+    <!-- ✅ Main Content -->
     <main class="container">
         <div class="grid">
             <section>
@@ -123,16 +123,16 @@
         </div>
     </main>
 
-    <!-- 🔥 Footer -->
+    <!-- ✅ Footer -->
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
     </footer>
 
-    <!-- 🔥 Fix: JavaScript -->
+    <!-- ✅ JavaScript -->
     <script>
         document.getElementById('bgSound').volume = 0.3;
 
-        // 🔊 Mute Button Logic
+        // ✅ Mute Button Logic
         const audio = document.getElementById("bgSound");
         const muteButton = document.getElementById("muteToggle");
 
@@ -147,7 +147,7 @@
             muteButton.textContent = audio.muted ? "🔇" : "🔊";
         });
 
-        // 🔥 Floating Ghosts (Safe Implementation)
+        // ✅ Floating Ghosts (Safe Implementation)
         function createGhosts(num) {
             for (let i = 0; i < num; i++) {
                 let ghost = document.createElement("div");
@@ -160,6 +160,13 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             createGhosts(5); // Adds 5 ghosts safely
+        });
+
+        // ✅ Debug Trick: Check If Anything Is Blocking Clicks
+        document.querySelectorAll('*').forEach(el => {
+            el.addEventListener("click", (e) => {
+                console.log(`Clicked: ${e.target.tagName} - Class: ${e.target.className}`);
+            });
         });
     </script>
 </body>
