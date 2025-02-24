@@ -20,7 +20,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur117.cur'), auto;
+            cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur131.cur'), auto;
         }
         main {
             flex: 1;
@@ -45,10 +45,17 @@
             padding: 20px;
             border: 2px solid #0f0;
             transition: all 0.3s ease-in-out;
-            box-shadow: 0 0 10px #0f0;
+            box-shadow: 0 0 15px red, 0 0 10px #0f0;
             position: relative;
             animation: float 3s infinite ease-in-out;
             cursor: pointer;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+        }
+        .section h3 {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            border-radius: 5px;
         }
         @keyframes float {
             0% { transform: translateY(0px); }
@@ -94,20 +101,6 @@
                 audio.pause();
                 soundButton.textContent = '🔊';
             }
-        });
-
-        document.addEventListener("mousemove", function(event) {
-            let trail = document.createElement("div");
-            trail.style.position = "absolute";
-            trail.style.left = event.pageX + "px";
-            trail.style.top = event.pageY + "px";
-            trail.style.width = "10px";
-            trail.style.height = "10px";
-            trail.style.background = "red";
-            trail.style.borderRadius = "50%";
-            trail.style.boxShadow = "0 0 10px red";
-            document.body.appendChild(trail);
-            setTimeout(() => { trail.remove(); }, 200);
         });
     </script>
     
