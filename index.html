@@ -10,8 +10,31 @@
 
         /* Custom Flying Bat Cursor */
         * { 
-            cursor: url(https://cur.cursors-4u.net/games/gam-10/gam929.ani), 
-                    url(https://cur.cursors-4u.net/games/gam-10/gam929.png), auto !important; 
+            cursor: none; /* Hide default cursor */
+        }
+
+        /* Bat animation */
+        .bat {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background-image: url('https://cur.cursors-4u.net/games/gam-10/gam929.png');
+            background-size: cover;
+            pointer-events: none;
+            animation: fly 1s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes fly {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            50% {
+                transform: translate(-50%, -60%) rotate(30deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
         }
 
         /* Other styles remain the same */
@@ -111,6 +134,8 @@
     </style>
 </head>
 <body>
+    <div class="bat" id="bat"></div>
+
     <audio id="bgSound" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
@@ -127,6 +152,13 @@
                 audio.pause();
                 soundButton.textContent = '🔊';
             }
+        });
+
+        // Bat follows the cursor
+        document.addEventListener('mousemove', function(e) {
+            const bat = document.getElementById('bat');
+            bat.style.left = e.pageX + 'px';
+            bat.style.top = e.pageY + 'px';
         });
     </script>
     
@@ -172,10 +204,5 @@
             </form>
         </section>
     </main>
-
-    <!-- Flying Bat Cursor Link -->
-    <a href="https://www.cursors-4u.com/cursor/2009/04/03/flying-bat.html" target="_blank" title="Flying Bat">
-        <img src="https://cur.cursors-4u.net/cursor.png" border="0" alt="Flying Bat" style="position:absolute; top: 0px; right: 0px;" />
-    </a>
 </body>
 </html>
