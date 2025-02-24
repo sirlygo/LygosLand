@@ -29,16 +29,23 @@
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
         }
 
-        /* ✅ Fix for Sections Being Clickable */
+        /* ✅ Fix Sections & Add Hover Effects */
         .section {
-            position: relative; /* Makes sure it's above ghosts */
-            z-index: 10; /* Keeps it above other elements */
+            position: relative;
+            z-index: 10;
             background: rgba(0, 0, 0, 0.9);
             padding: 20px;
             border: 2px solid #0f0;
             margin: 10px;
             box-shadow: 0 0 10px #0f0;
-            pointer-events: auto; /* Allows user to click */
+            pointer-events: auto;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .section:hover {
+            transform: scale(1.05); /* Slight zoom effect */
+            box-shadow: 0 0 20px red, 0 0 40px lime; /* Neon glow */
+            border-color: red;
         }
 
         /* ✅ Floating Ghosts */
@@ -77,6 +84,16 @@
         .mute-button:hover {
             background: lime;
             color: black;
+        }
+        
+        /* ✅ Subscribe Section */
+        .subscribe {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 20px;
+            border: 2px solid red;
+            margin: 20px auto;
+            width: 50%;
+            box-shadow: 0 0 10px red;
         }
     </style>
 </head>
@@ -121,6 +138,15 @@
             <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
             <div class="section"><h3>Help</h3><p>Escape or embrace?</p></div>
         </div>
+        
+        <!-- ✅ Restored Subscribe Section -->
+        <div class="subscribe">
+            <h3>Subscribe for More Darkness</h3>
+            <form>
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
     </main>
 
     <!-- ✅ Footer -->
@@ -160,13 +186,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             createGhosts(5); // Adds 5 ghosts safely
-        });
-
-        // ✅ Debug Trick: Check If Anything Is Blocking Clicks
-        document.querySelectorAll('*').forEach(el => {
-            el.addEventListener("click", (e) => {
-                console.log(`Clicked: ${e.target.tagName} - Class: ${e.target.className}`);
-            });
         });
     </script>
 </body>
