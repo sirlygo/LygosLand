@@ -3,110 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lygo's Land - Fixed</title>
+    <title>Lygo's Land</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
-
+        
         body {
             background-color: #000;
             color: #0f0;
             font-family: 'Creepster', cursive;
             text-align: center;
+            padding: clamp(10px, 2vw, 20px);
             min-height: 100vh;
             margin: 0;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            position: relative;
         }
-
-        main { flex: 1; }
-
+        main {
+            flex: 1;
+        }
         h1 {
             font-size: 3rem;
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
         }
-
-        /* ✅ Fix Sections & Add Hover Effects */
         .section {
-            position: relative;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
+            padding: clamp(20px, 4vw, 50px);
             border: 2px solid #0f0;
-            margin: 10px;
+            margin: clamp(10px, 2vw, 20px);
+            transition: all 0.3s ease-in-out;
             box-shadow: 0 0 10px #0f0;
-            pointer-events: auto;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            height: calc(100% - clamp(20px, 4vw, 40px));
         }
-
+        .grid {
+            gap: clamp(10px, 2vw, 20px);
+        }
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+        }
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+        }
         .section:hover {
-            transform: scale(1.05); /* Slight zoom effect */
-            box-shadow: 0 0 20px red, 0 0 40px lime; /* Neon glow */
-            border-color: red;
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px red;
         }
-
-        /* ✅ Floating Ghosts */
-        .ghost {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: url('https://raw.githubusercontent.com/sirlygo/LygosLand/main/assets/Ghost.png') no-repeat center;
-            background-size: cover;
-            opacity: 0.7;
-            animation: floatGhosts 5s infinite ease-in-out alternate;
-            pointer-events: none; /* Ensures ghosts do NOT block clicks */
+        video {
+            max-width: 100%;
+            height: auto;
+            border: 5px solid red;
+            box-shadow: 0 0 15px red;
         }
-
-        @keyframes floatGhosts {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); opacity: 0.9; }
-            100% { transform: translateY(0px) scale(1); }
-        }
-
-        /* ✅ Mute Button */
-        .mute-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: black;
-            color: lime;
-            border: 2px solid lime;
-            font-size: 20px;
+        nav {
+            background: #111;
             padding: 10px;
-            cursor: pointer;
-            border-radius: 50%;
-            transition: all 0.3s;
-            z-index: 100;
+            border-bottom: 2px solid red;
         }
-        .mute-button:hover {
-            background: lime;
-            color: black;
-        }
-        
-        /* ✅ Subscribe Section */
-        .subscribe {
-            background: rgba(255, 0, 0, 0.2);
-            padding: 20px;
-            border: 2px solid red;
-            margin: 20px auto;
-            width: 50%;
-            box-shadow: 0 0 10px red;
+        footer {
+            margin-top: 40px;
+            padding: 10px;
+            background: #111;
+            border-top: 2px solid red;
         }
     </style>
 </head>
 <body>
-    <!-- ✅ Background Audio -->
     <audio id="bgSound" loop autoplay>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
-
-    <!-- ✅ Mute Button -->
-    <button id="muteToggle" class="mute-button">🔊</button>
-
-    <!-- ✅ Navigation -->
+    <script>
+        document.getElementById('bgSound').volume = 0.3;
+    </script>
     <nav class="container-fluid">
         <ul>
             <li><strong>Lygo's Land</strong></li>
@@ -117,8 +86,6 @@
             <li><a href="#" role="button">Contact</a></li>
         </ul>
     </nav>
-
-    <!-- ✅ Main Content -->
     <main class="container">
         <div class="grid">
             <section>
@@ -131,62 +98,30 @@
                 </figure>
             </section>
         </div>
-
         <div class="grid">
             <div class="section"><h3>Bots</h3><p>Enter the darkness...</p></div>
-            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
+            <div class="section"><h3>Profiles 2</h3><p>Whispers in the night...</p></div>
             <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
-            <div class="section"><h3>Help</h3><p>Escape or embrace?</p></div>
-        </div>
-        
-        <!-- ✅ Restored Subscribe Section -->
-        <div class="subscribe">
-            <h3>Subscribe for More Darkness</h3>
-            <form>
-                <input type="email" placeholder="Enter your email" required>
-                <button type="submit">Subscribe</button>
-            </form>
+            <div class="section"><h3>Help 4</h3><p>Escape or embrace?</p></div>
         </div>
     </main>
-
-    <!-- ✅ Footer -->
+    <section aria-label="Subscribe example">
+        <div class="container">
+            <article>
+                <hgroup>
+                    <h2>Stay Updated</h2>
+                    <h3>Subscribe for more eerie adventures</h3>
+                </hgroup>
+                <form class="grid">
+                    <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required />
+                    <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required />
+                    <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+                </form>
+            </article>
+        </div>
+    </section>
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
     </footer>
-
-    <!-- ✅ JavaScript -->
-    <script>
-        document.getElementById('bgSound').volume = 0.3;
-
-        // ✅ Mute Button Logic
-        const audio = document.getElementById("bgSound");
-        const muteButton = document.getElementById("muteToggle");
-
-        if (localStorage.getItem("muted") === "true") {
-            audio.muted = true;
-            muteButton.textContent = "🔇";
-        }
-
-        muteButton.addEventListener("click", () => {
-            audio.muted = !audio.muted;
-            localStorage.setItem("muted", audio.muted);
-            muteButton.textContent = audio.muted ? "🔇" : "🔊";
-        });
-
-        // ✅ Floating Ghosts (Safe Implementation)
-        function createGhosts(num) {
-            for (let i = 0; i < num; i++) {
-                let ghost = document.createElement("div");
-                ghost.classList.add("ghost");
-                ghost.style.left = Math.random() * window.innerWidth + "px";
-                ghost.style.top = Math.random() * (window.innerHeight - 100) + "px";
-                document.body.appendChild(ghost);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            createGhosts(5); // Adds 5 ghosts safely
-        });
-    </script>
 </body>
 </html>
