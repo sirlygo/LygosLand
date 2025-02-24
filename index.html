@@ -54,11 +54,25 @@
             50% { transform: translateY(5px); }
             100% { transform: translateY(0px); }
         }
-        .section:hover {
-            background: rgba(0, 255, 0, 0.2);
-            box-shadow: 0 0 20px red;
-            transform: scale(1.05);
-            filter: blur(1px);
+        .sound-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 5px red;
+            font-size: 1rem;
+        }
+        .sound-toggle:hover {
+            box-shadow: 0 0 10px #0f0;
         }
     </style>
 </head>
@@ -95,10 +109,22 @@
             </section>
         </div>
         <div class="grid">
-            <div class="section" onclick="window.location.href='bots.html'"><h3>Bots</h3><p>Enter the darkness...</p></div>
-            <div class="section" onclick="window.location.href='profiles.html'"><h3>Profiles</h3><p>Whispers in the night...</p></div>
-            <div class="section" onclick="window.location.href='about.html'"><h3>About</h3><p>Neon blood drips...</p></div>
-            <div class="section" onclick="window.location.href='help.html'"><h3>Help</h3><p>Escape or embrace?</p></div>
+            <div class="section" onclick="window.location.href='bots.html'">
+                <h3>Bots</h3>
+                <p>Enter the darkness...</p>
+            </div>
+            <div class="section" onclick="window.location.href='profiles.html'">
+                <h3>Profiles</h3>
+                <p>Whispers in the night...</p>
+            </div>
+            <div class="section" onclick="window.location.href='about.html'">
+                <h3>About</h3>
+                <p>Neon blood drips...</p>
+            </div>
+            <div class="section" onclick="window.location.href='help.html'">
+                <h3>Help</h3>
+                <p>Escape or embrace?</p>
+            </div>
         </div>
         <section>
             <hgroup>
