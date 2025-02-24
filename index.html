@@ -83,10 +83,24 @@
     </style>
 </head>
 <body>
-    <audio id="bgSound" loop muted>
+    <audio id="bgSound" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
     <button id="soundToggle" class="sound-toggle">🔊</button>
+    <script>
+        const audio = document.getElementById('bgSound');
+        const soundButton = document.getElementById('soundToggle');
+
+        soundButton.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play().catch(error => console.log("Playback error:", error));
+                soundButton.textContent = '🔇';
+            } else {
+                audio.pause();
+                soundButton.textContent = '🔊';
+            }
+        });
+    </script>
     
     <main class="container">
         <div class="grid">
