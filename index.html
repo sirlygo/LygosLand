@@ -28,6 +28,7 @@
             min-height: 100vh;
             width: 100%;
             overflow-y: auto; /* Allow scrolling */
+            position: relative; /* This allows absolute positioning */
         }
 
         /* Main Layout */
@@ -77,19 +78,19 @@
         }
 
         h1, h2 {
-            color: white;
             font-family: 'Roboto', sans-serif;
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
             animation: glitch 1s infinite alternate;
         }
 
-        /* Reduced size for h1 and h2 */
+        /* Apply green color to both h1 and h2 */
         h1 {
-            font-size: 2.5rem; /* Reduced font size */
+            font-size: 2.5rem;
+            color: #0f0; /* Green color */
         }
 
         h2 {
-            font-size: 2rem; /* Slightly smaller font size */
+            font-size: 2rem;
             color: #0f0; /* Green color for "A world of eerie wonders" */
         }
 
@@ -213,6 +214,24 @@
             border-radius: 10px; /* Border radius to match the wrapper */
         }
 
+        /* Moon Image Styling */
+        #moon-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://cdn.pixabay.com/photo/2018/07/18/01/16/moon-3542376_960_720.jpg'); /* Realistic Moon Image */
+            background-size: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 1000; /* Ensures it's on top of everything else */
+        }
+
+        #moon-btn:hover {
+            transform: scale(1.2); /* Scale the moon when hovered */
+        }
+
     </style>
 </head>
 <body>
@@ -225,6 +244,9 @@
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
     <button id="soundToggle" class="sound-toggle">🔊</button>
+
+    <!-- Moon Button (Secret Button) -->
+    <div id="moon-btn" onclick="playHowl()"></div>
 
     <script>
         const audio = document.getElementById('bgSound');
@@ -247,6 +269,12 @@
             bat.style.left = e.pageX + 'px';
             bat.style.top = e.pageY + 'px';
         });
+
+        // Function to play wolf howl sound when moon button is clicked
+        function playHowl() {
+            const howlAudio = new Audio('https://www.soundjay.com/animals/wolf-howling-01.mp3'); // Wolf Howl Sound
+            howlAudio.play();
+        }
     </script>
 
     <main class="container">
