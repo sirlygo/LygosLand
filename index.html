@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-        
-        /* Global cursor */
-        * {
-            cursor: url(https://cur.cursors-4u.net/others/oth-1/oth41.cur), auto !important;
+
+        /* Custom Flying Bat Cursor */
+        * { 
+            cursor: url(https://cur.cursors-4u.net/games/gam-10/gam929.ani), 
+                    url(https://cur.cursors-4u.net/games/gam-10/gam929.png), auto !important; 
         }
 
-        body {
+        /* Other styles remain the same */
+        body { 
             background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
             background-size: cover;
             color: #0f0;
@@ -158,11 +160,11 @@
                 <p style="background-color: rgba(0, 0, 0, 0.7); padding: 5px; border-radius: 5px;">Escape or embrace?</p>
             </div>
         </div>
-    <section>
+        <section>
             <hgroup style="background-color: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 5px; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 5px solid #0f0; box-shadow: 0 0 20px #0f0;">
-    <h2>Stay Updated</h2>
-    <h3>Subscribe for more eerie adventures</h3>
-</hgroup>
+                <h2>Stay Updated</h2>
+                <h3>Subscribe for more eerie adventures</h3>
+            </hgroup>
             <form class="grid">
                 <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required style="border: 2px solid #0f0; box-shadow: 0 0 10px #0f0; padding: 5px; border-radius: 5px;" />
                 <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required style="border: 2px solid #0f0; box-shadow: 0 0 10px #0f0; padding: 5px; border-radius: 5px;" />
@@ -170,5 +172,10 @@
             </form>
         </section>
     </main>
+
+    <!-- Flying Bat Cursor Link -->
+    <a href="https://www.cursors-4u.com/cursor/2009/04/03/flying-bat.html" target="_blank" title="Flying Bat">
+        <img src="https://cur.cursors-4u.net/cursor.png" border="0" alt="Flying Bat" style="position:absolute; top: 0px; right: 0px;" />
+    </a>
 </body>
 </html>
