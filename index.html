@@ -16,8 +16,8 @@
         /* Bat animation */
         .bat {
             position: absolute;
-            width: 32px;
-            height: 32px;
+            width: 48px;
+            height: 48px;
             background-image: url('https://cur.cursors-4u.net/games/gam-10/gam929.png');
             background-size: contain;
             pointer-events: none;
@@ -29,8 +29,14 @@
             0% {
                 transform: translate(-50%, -50%) rotate(0deg);
             }
+            25% {
+                transform: translate(-50%, -60%) rotate(20deg);
+            }
             50% {
-                transform: translate(-50%, -60%) rotate(30deg);
+                transform: translate(-50%, -70%) rotate(40deg);
+            }
+            75% {
+                transform: translate(-50%, -60%) rotate(20deg);
             }
             100% {
                 transform: translate(-50%, -50%) rotate(0deg);
