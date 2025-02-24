@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lygo's Land - Fully Fixed</title>
+    <title>Lygo's Land - Fixed</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     
     <style>
@@ -19,31 +19,29 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
-        main {
-            flex: 1;
-            position: relative; /* Fix clicking issue */
-            z-index: 10; /* Ensure it stays on top */
-        }
+        main { flex: 1; }
 
         h1 {
             font-size: 3rem;
             text-shadow: 0 0 10px #0f0, 0 0 20px red;
         }
 
+        /* 🔥 Fix for Sections Not Being Clickable */
         .section {
+            position: relative; /* Ensures sections are on top */
+            z-index: 10; /* Keeps them above floating elements */
+            background: rgba(0, 0, 0, 0.9); /* Ensures visibility */
             padding: 20px;
             border: 2px solid #0f0;
             margin: 10px;
             box-shadow: 0 0 10px #0f0;
-            position: relative; /* Ensures it appears above floating elements */
-            z-index: 15; /* Higher than ghosts */
-            background: rgba(0, 0, 0, 0.8); /* Slight transparency */
-            pointer-events: auto; /* Ensures clicks are possible */
+            pointer-events: auto; /* Forces sections to accept clicks */
         }
 
-        /* Floating Ghosts */
+        /* 🔥 Floating Ghosts */
         .ghost {
             position: absolute;
             width: 80px;
@@ -52,7 +50,7 @@
             background-size: cover;
             opacity: 0.7;
             animation: floatGhosts 5s infinite ease-in-out alternate;
-            pointer-events: none; /* Fix: Ghosts won't block clicks */
+            pointer-events: none; /* Ensures ghosts do NOT block clicks */
         }
 
         @keyframes floatGhosts {
@@ -61,7 +59,7 @@
             100% { transform: translateY(0px) scale(1); }
         }
 
-        /* Mute Button */
+        /* 🔊 Mute Button */
         .mute-button {
             position: fixed;
             bottom: 20px;
@@ -88,10 +86,10 @@
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Mute Button -->
+    <!-- 🔊 Mute Button -->
     <button id="muteToggle" class="mute-button">🔊</button>
 
-    <!-- Navigation -->
+    <!-- 🔥 Navigation -->
     <nav class="container-fluid">
         <ul>
             <li><strong>Lygo's Land</strong></li>
@@ -103,6 +101,7 @@
         </ul>
     </nav>
 
+    <!-- 🔥 Main Content -->
     <main class="container">
         <div class="grid">
             <section>
@@ -124,14 +123,16 @@
         </div>
     </main>
 
+    <!-- 🔥 Footer -->
     <footer class="container">
         <small><a href="#">Privacy Policy</a> • <a href="#">Terms of Service</a></small>
     </footer>
 
+    <!-- 🔥 Fix: JavaScript -->
     <script>
         document.getElementById('bgSound').volume = 0.3;
 
-        // Mute Button Logic
+        // 🔊 Mute Button Logic
         const audio = document.getElementById("bgSound");
         const muteButton = document.getElementById("muteToggle");
 
@@ -146,7 +147,7 @@
             muteButton.textContent = audio.muted ? "🔇" : "🔊";
         });
 
-        // Floating Ghosts (Safe Implementation)
+        // 🔥 Floating Ghosts (Safe Implementation)
         function createGhosts(num) {
             for (let i = 0; i < num; i++) {
                 let ghost = document.createElement("div");
@@ -160,13 +161,6 @@
         document.addEventListener("DOMContentLoaded", () => {
             createGhosts(5); // Adds 5 ghosts safely
         });
-
-        // Debug: Outline all elements to find hidden blockers
-        function debugBorders() {
-            document.querySelectorAll('*').forEach(el => {
-                el.style.border = '1px solid red';
-            });
-        }
     </script>
 </body>
 </html>
