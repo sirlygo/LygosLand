@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GBA Emulator (Gamepad Support)</title>
+    <script src="EmulatorJS/js/keypad.js"></script>
+    <script src="EmulatorJS/data/src/gamepad.js"></script>
+
+    <style>
+        body {
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="gba-frame" src="https://gba.js.org/" width="1000" height="700" frameborder="0" allowfullscreen></iframe>
+
+    <script>
+        document.addEventListener("keydown", function(event) {
+            console.log("🛠 Key Down:", event.key);
+            sendKeyToEmulator(event.key, "keydown");
+        });
+
+        document.addEventListener("keyup", function(event) {
+            console.log("🛠 Key Up:", event.key);
+            sendKeyToEmulator(event.key, "keyup");
+        });
+
+        function sendKeyToEmulator(key, type) {
+            const gbaFrame = document.getElementById("gba-frame");
+
+            try {
+                if (gbaFrame && gbaFrame.contentWindow && gbaFrame.contentWindow.document) {
+                    let keyEvent = new KeyboardEvent(type, { key: key });
+                    gbaFrame.contentWindow.document.dispatchEvent(keyEvent);
+                } else {
+                    console.warn("⚠️ Cross-origin iframe access blocked. Key input not sent.");
+                }
+            } catch (error) {
+                console.warn("❌ Cross-origin iframe access blocked. Key input not sent.", error);
+            }
+        }
+    </script>
+</body>
+</html>

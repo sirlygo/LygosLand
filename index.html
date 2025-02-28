@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lygo's Land</title>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" as="style">
+    <link rel="preload" href="https://i.imgur.com/WNLWVDf.jpeg" as="image">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
@@ -12,7 +14,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none; /* Hide the default cursor */
+            cursor: none; /* Hide default cursor */
         }
 
         body {
@@ -27,79 +29,11 @@
             padding: 20px;
             min-height: 100vh;
             width: 100%;
-            overflow-y: auto; /* Allow scrolling */
-            position: relative; /* This allows absolute positioning */
+            overflow-y: auto;
+            position: relative;
         }
 
-        /* Main Layout */
-        main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-            margin: 20px 0;
-        }
-
-        .section {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border: 2px solid #0f0;
-            box-shadow: 0 0 15px red, 0 0 10px #0f0;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .section:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px red, 0 0 20px #0f0;
-        }
-
-        /* Combined Welcome and A World into one block */
-        .welcome-container {
-            display: inline-block;
-            padding: 30px;
-            margin-bottom: 50px; /* Increased margin to space from video */
-            border: 5px solid #0f0; /* Glowing green border */
-            box-shadow: 0 0 20px #0f0, 0 0 40px red; /* Stronger glowing effect */
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-            border-radius: 5px;
-            max-width: 100%; /* Match the video width */
-            width: 80%; /* Scale the width down */
-        }
-
-        h1, h2 {
-            font-family: 'Roboto', sans-serif;
-            text-shadow: 0 0 10px #0f0, 0 0 20px red;
-            animation: glitch 1s infinite alternate;
-        }
-
-        /* Apply green color to both h1 and h2 */
-        h1 {
-            font-size: 2.5rem;
-            color: #0f0; /* Green color */
-        }
-
-        h2 {
-            font-size: 2rem;
-            color: #0f0; /* Green color for "A world of eerie wonders" */
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 2px red; }
-            100% { text-shadow: -2px -2px #0f0; }
-        }
-
-        /* Sound button */
+        /* Sound Button (Top Right) */
         .sound-toggle {
             position: fixed;
             top: 10px;
@@ -108,24 +42,105 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 5px red;
-            font-size: 1rem;
-            cursor: pointer;
+            font-size: 1.2rem;
             transition: box-shadow 0.3s ease;
+            z-index: 1000;
         }
 
         .sound-toggle:hover {
             box-shadow: 0 0 10px #0f0;
         }
 
-        /* Form Styling */
+        /* Centered Panels */
+        .welcome-container,
+        .stay-updated-box {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border: 5px solid #0f0;
+            box-shadow: 0 0 15px #0f0, 0 0 20px red;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 5px;
+            margin: 30px auto;
+        }
+
+        h1, h2 {
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 0 0 10px #0f0, 0 0 20px red;
+            animation: glitch 1s infinite alternate;
+            color: #0f0;
+        }
+
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.5rem; }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px red; }
+            100% { text-shadow: -2px -2px #0f0; }
+        }
+
+        /* Video */
+        .video-wrapper {
+            border: 5px solid #0f0;
+            box-shadow: 0 0 20px #0f0;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        /* Sections Grid */
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        .section {
+            flex: 1 1 250px;
+            max-width: 250px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #0f0;
+            box-shadow: 0 0 15px red, 0 0 10px #0f0;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .section:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px red, 0 0 20px #0f0;
+        }
+
+        /* Subscribe Section */
+        .stay-updated-box form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         input, button {
-            margin: 10px;
+            width: 100%;
+            margin: 10px 0;
             padding: 10px;
             border: 2px solid #0f0;
             box-shadow: 0 0 10px #0f0;
@@ -135,7 +150,6 @@
         button {
             background-color: #0f0;
             color: black;
-            cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
@@ -143,152 +157,25 @@
             background-color: #333;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .grid {
-                gap: 10px;
-                margin: 10px 0;
-            }
-
-            h1, h2, h3 {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Bat Cursor */
-        .bat-cursor {
-            position: absolute;
-            width: 48px;
-            height: 48px;
-            background-image: url('https://cur.cursors-4u.net/games/gam-10/gam929.png'); /* Bat image URL */
-            background-size: contain;
-            pointer-events: none;
-            animation: fly 0.5s steps(2) infinite;
-            transform-origin: center;
-            display: block; /* Bat cursor visible */
-        }
-
-        @keyframes fly {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-            50% {
-                transform: translate(-50%, -60%) rotate(20deg);
-            }
-            100% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-        }
-
-        /* Stay Updated Section Box */
-        .stay-updated-box {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border: 5px solid #0f0;
-            box-shadow: 0 0 15px red, 0 0 20px #0f0;
-            border-radius: 10px;
-            margin-top: 150px; /* Increased spacing from sections */
-            width: 100%;
-            max-width: 500px;
-            margin-bottom: 50px;
-        }
-
-        /* Video Wrapper and Border */
-        .video-wrapper {
-            border: 5px solid #0f0; /* Green border around the video */
-            box-shadow: 0 0 20px #0f0; /* Glowing green border effect */
-            border-radius: 10px;
-            margin-bottom: 100px; /* Increased space between video and sections */
-            max-width: 100%; /* Video scales down */
-            width: 80%; /* Scale the video down */
-        }
-
-        /* Video Styling */
-        video {
-            width: 100%; /* Full width of the container */
-            height: auto;
-            border-radius: 10px; /* Border radius to match the wrapper */
-        }
-
-        /* Moon Image Styling */
-        #moon-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            height: 80px;
-            background-image: url('https://cdn.pixabay.com/photo/2018/07/18/01/16/moon-3542376_960_720.jpg'); /* Realistic Moon Image */
-            background-size: cover;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            z-index: 1000; /* Ensures it's on top of everything else */
-        }
-
-        #moon-btn:hover {
-            transform: scale(1.2); /* Scale the moon when hovered */
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Bat element that follows the cursor -->
     <div class="bat-cursor" id="bat"></div>
-
-    <!-- Bat Audio -->
     <audio id="bgSound" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
     <button id="soundToggle" class="sound-toggle">🔊</button>
 
-    <!-- Moon Button (Secret Button) -->
-    <div id="moon-btn" onclick="playHowl()"></div>
-
-    <script>
-        const audio = document.getElementById('bgSound');
-        const soundButton = document.getElementById('soundToggle');
-        const bat = document.getElementById('bat');
-
-        soundButton.addEventListener('click', function() {
-            if (audio.paused) {
-                // Play the audio only after user interaction
-                audio.play().catch(error => console.log("Playback error:", error));
-                soundButton.textContent = '🔇';
-            } else {
-                audio.pause();
-                soundButton.textContent = '🔊';
-            }
-        });
-
-        // Bat cursor movement
-        document.addEventListener('mousemove', function(e) {
-            bat.style.left = e.pageX + 'px';
-            bat.style.top = e.pageY + 'px';
-        });
-
-        // Function to play wolf howl sound when moon button is clicked
-        function playHowl() {
-            const howlAudio = new Audio('https://www.soundjay.com/animals/wolf-howling-01.mp3'); // Wolf Howl Sound
-            howlAudio.play();
-        }
-    </script>
-
-    <main class="container">
-        <!-- Combined Heading with Single Green Border -->
+    <main>
         <div class="welcome-container">
             <h1>Welcome to Lygo's Land</h1>
             <h2>A world of eerie wonders</h2>
         </div>
 
-        <!-- Video Wrapper with Border and Glowing Effect -->
         <section class="video-wrapper">
             <video autoplay loop muted playsinline>
                 <source src="https://i.imgur.com/5KMgrJb.mp4" type="video/mp4">
-                Your browser does not support the video tag.
             </video>
         </section>
 
@@ -297,33 +184,22 @@
                 <h3>Bots</h3>
                 <p>Enter the darkness...</p>
             </div>
-            <div class="section" onclick="window.location.href='profiles.html'">
-                <h3>Profiles</h3>
-                <p>Whispers in the night...</p>
-            </div>
-            <div class="section" onclick="window.location.href='about.html'">
-                <h3>About</h3>
-                <p>Neon blood drips...</p>
-            </div>
-            <div class="section" onclick="window.location.href='help.html'">
-                <h3>Help</h3>
-                <p>Escape or embrace?</p>
+            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
+            <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
+            <div class="section help-section" onclick="window.location.href='https://www.lygosland.com'">
+                <h3>Help</h3><p>Escape or embrace?</p>
             </div>
         </div>
 
-        <!-- Stay Updated Section at the Bottom -->
         <section class="stay-updated-box">
-            <hgroup>
-                <h2>Stay Updated</h2>
-                <h3>Subscribe for more eerie adventures</h3>
-            </hgroup>
-            <form class="grid">
-                <input type="text" id="firstname" name="firstname" placeholder="Your Name" aria-label="Name" required />
-                <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Email" required />
-                <button type="submit" onclick="event.preventDefault()">Subscribe</button>
+            <h2>Stay Updated</h2>
+            <form>
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <button type="submit">Subscribe</button>
             </form>
         </section>
-
     </main>
+
 </body>
 </html>
