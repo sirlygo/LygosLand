@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Me - Lygo's Land</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: none;
+    }
+    body {
+      background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: #0f0;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      min-height: 100vh;
+      width: 100%;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* About Me Container */
+    .about-container {
+      display: inline-block;
+      padding: 30px;
+      margin-top: 50px;
+      border: 5px solid #0f0;
+      box-shadow: 0 0 20px #0f0, 0 0 40px red;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      width: 80%;
+      max-width: 800px;
+    }
+    h1, h2 {
+      font-family: 'Roboto', sans-serif;
+      text-shadow: 0 0 10px #0f0, 0 0 20px red;
+    }
+    p {
+      font-size: 1.2rem;
+      line-height: 1.5;
+      margin-top: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    /* Back Button */
+    .back-button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      color: black;
+      background: #0f0;
+      border: 2px solid #0f0;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .back-button:hover {
+      background: black;
+      color: #0f0;
+      box-shadow: 0 0 20px red;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="about-container">
+    <h1>About Me</h1>
+    <h2>Welcome to Lygo's Land</h2>
+    <p>
+      Greetings, traveler! I am Lygo, the keeper of this eerie and wondrous domain.
+      Lygo's Land is a world of neon shadows and hidden mysteries, a place where the
+      surreal meets the unknown. I have always been fascinated by the eerie beauty
+      of the night and the digital glow of cyberspace. This website is a reflection
+      of my love for all things mysterious, creative, and a little bit strange.
+    </p>
+    <p>
+      If you enjoy the thrill of the unknown, the whispers in the dark, and the neon
+      glow of adventure, then you are in the right place. Explore, connect, and immerse
+      yourself in the experience.
+    </p>
+    <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  </div>
+  
+</body>
+</html>
