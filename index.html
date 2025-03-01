@@ -34,12 +34,25 @@
             position: relative;
         }
 
-        /* Sound Button (Top Right) */
+        /* Bat Cursor */
+        .bat-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: url('./bat-animated-arrow.gif') no-repeat center center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        /* Sound Button */
         .sound-toggle {
             position: fixed;
             top: 10px;
             right: 10px;
-            background: red;
+            background: green;
             color: white;
             border: none;
             border-radius: 50%;
@@ -52,15 +65,15 @@
             font-size: 1.2rem;
             transition: box-shadow 0.3s ease;
             z-index: 1000;
+            cursor: pointer;
         }
 
         .sound-toggle:hover {
             box-shadow: 0 0 10px #0f0;
         }
 
-        /* Centered Panels */
-        .welcome-container,
-        .stay-updated-box {
+        /* Welcome Section */
+        .welcome-container {
             max-width: 600px;
             width: 100%;
             padding: 20px;
@@ -132,14 +145,21 @@
             box-shadow: 0 0 25px red, 0 0 20px #0f0;
         }
 
-        /* Subscribe Section */
-        .stay-updated-box form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Stay Updated Box */
+        .stay-updated-box {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border: 5px solid #0f0;
+            box-shadow: 0 0 15px #0f0, 0 0 20px red;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 5px;
+            margin: 30px auto;
+            text-align: center;
         }
 
-        input, button {
+        .stay-updated-box input,
+        .stay-updated-box button {
             width: 100%;
             margin: 10px 0;
             padding: 10px;
@@ -148,13 +168,13 @@
             border-radius: 5px;
         }
 
-        button {
+        .stay-updated-box button {
             background-color: #0f0;
             color: black;
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
+        .stay-updated-box button:hover {
             background-color: #333;
         }
 
@@ -163,9 +183,11 @@
 <body>
 
     <div class="bat-cursor" id="bat"></div>
+
     <audio id="bgSound" loop>
         <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
     </audio>
+    
     <button id="soundToggle" class="sound-toggle">🔊</button>
 
     <main>
@@ -185,10 +207,17 @@
                 <h3>Play Games</h3>
                 <p>Enter the darkness...</p>
             </div>
-            <div class="section"><h3>Profiles</h3><p>Whispers in the night...</p></div>
-            <div class="section"><h3>About</h3><p>Neon blood drips...</p></div>
-            <div class="section help-section" onclick="window.location.href='https://www.lygosland.com'">
-                <h3>Help</h3><p>Escape or embrace?</p>
+            <div class="section">
+                <h3>Profiles</h3>
+                <p>Whispers in the night...</p>
+            </div>
+            <div class="section" onclick="window.location.href='About Me.html'">
+                <h3>About</h3>
+                <p>Neon blood drips...</p>
+            </div>
+            <div class="section" onclick="window.location.href='https://www.lygosland.com'">
+                <h3>Help</h3>
+                <p>Escape or embrace?</p>
             </div>
         </div>
 
@@ -202,5 +231,46 @@
         </section>
     </main>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Bat Cursor Fix
+        const bat = document.getElementById("bat");
+
+        if (bat) {
+            document.addEventListener("mousemove", function (e) {
+                bat.style.display = "block";
+                bat.style.left = e.clientX + "px";
+                bat.style.top = e.clientY + "px";
+            });
+
+            document.addEventListener("mouseleave", function () {
+                bat.style.display = "none";
+            });
+        } else {
+            console.error("❌ Bat cursor element not found.");
+        }
+
+        // Sound Toggle Fix
+        const soundToggle = document.getElementById("soundToggle");
+        const bgSound = document.getElementById("bgSound");
+
+        if (soundToggle && bgSound) {
+            soundToggle.addEventListener("click", function () {
+                if (bgSound.paused) {
+                    bgSound.play().then(() => {
+                        soundToggle.textContent = "🔇"; // Change icon when playing
+                    }).catch(error => {
+                        console.error("❌ Autoplay blocked. User interaction required.", error);
+                    });
+                } else {
+                    bgSound.pause();
+                    soundToggle.textContent = "🔊"; // Change icon when paused
+                }
+            });
+        } else {
+            console.error("❌ Sound toggle button or audio element not found.");
+        }
+    });
+</script>
 </body>
 </html>
