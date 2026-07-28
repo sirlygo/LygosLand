@@ -536,6 +536,44 @@ input::placeholder { color: rgba(207, 232, 216, 0.35); }
 .recent__name { color: var(--bone); }
 .recent__meta { color: var(--phosphor-dim); font-size: 0.72rem; }
 
+.romlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 3px;
+}
+.rom {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--bone);
+  font-family: var(--body);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+.rom:hover, .rom:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--phosphor);
+}
+.rom__name { flex: 1 1 auto; word-break: break-word; }
+.rom__meta { font-size: 0.68rem; color: var(--phosphor-dim); }
+.rom__more { padding: 0.7rem 0.9rem; font-size: 0.72rem; color: var(--phosphor-dim); }
+
+/* Stored game cards */
+.game { border-style: solid; }
+.game h3 { word-break: break-word; }
+
 /* Diagnostics output */
 .diag {
   max-height: 300px;
