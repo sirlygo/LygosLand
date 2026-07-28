@@ -130,22 +130,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   /* --------------------------------------------------------------------
-     WHERE THE EMULATOR ITSELF COMES FROM.
-     
-     The EmulatorJS folder in this repo is a source checkout: it has
-     data/src/ but not the built emulator.min.js / emulator.min.css, which
-     aren't committed to that project. loader.js runs, fails to find the
-     bundle, and leaves a black screen with no error.
-
-     Default below is the official CDN, which is complete and needs nothing
-     in the repo. To use local files instead, download a *release* build of
-     EmulatorJS (not the source zip) into EmulatorJS/data/ and switch the
-     constant to the second line.
-     -------------------------------------------------------------------- */
-  const EJS_DATA = "https://cdn.emulatorjs.org/stable/data/";
-  // const EJS_DATA = "EmulatorJS/data/";
-
-  /* --------------------------------------------------------------------
      Which cores can use a BIOS, and how badly they need it.
      -------------------------------------------------------------------- */
   const BIOS_INFO = {
@@ -350,45 +334,24 @@ document.addEventListener("DOMContentLoaded", function () {
     window.EJS_core          = core;
     window.EJS_gameUrl       = URL.createObjectURL(f);
     window.EJS_gameName      = name;
-    window.EJS_pathtodata    = EJS_DATA;   // forward slashes. Backslashes 404 on the web.
+    window.EJS_pathtodata    = "EmulatorJS/data/";   // forward slashes. Backslashes 404 on the web.
     window.EJS_startOnLoaded = true;
     window.EJS_color         = "#00ff41";
     if (bios) window.EJS_biosUrl = URL.createObjectURL(bios.blob);
 
     const s = document.createElement("script");
-    s.src = EJS_DATA + "loader.js";
+    s.src = "EmulatorJS/data/loader.js";
     s.onload = function () {
       say("");
       els.loader.hidden = true;
       els.after.hidden = false;
-      watchdog();
     };
     s.onerror = function () {
       launched = false;
       els.stage.hidden = true;
-      say("Couldn't load " + EJS_DATA + "loader.js. Check the path, or switch EJS_DATA to the CDN.", "error");
+      say("Couldn't find EmulatorJS/data/loader.js. Check that the EmulatorJS folder is committed and the path matches.", "error");
     };
     document.body.appendChild(s);
-  }
-
-  /* --------------------------------------------------------------------
-     Watchdog. loader.js can load fine and still fail afterwards — a missing
-     bundle, a core that won't download. That used to leave a silent black
-     box. If nothing has rendered inside #screen after 25s, say so.
-     -------------------------------------------------------------------- */
-  function watchdog() {
-    const screen = document.getElementById("screen");
-    setTimeout(function () {
-      const alive = screen.querySelector("canvas") ||
-                    screen.querySelector(".ejs_video_element") ||
-                    screen.children.length > 0;
-      if (!alive) {
-        els.after.hidden = false;
-        say("The emulator loaded but never started. Usually the emulator "
-          + "files are incomplete — open the console (F12) and look for 404s "
-          + "under " + EJS_DATA + ".", "error");
-      }
-    }, 25000);
   }
 
   renderBios();
