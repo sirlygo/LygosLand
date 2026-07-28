@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<title>Play — Lygo's Land</title>
+<meta name="description" content="Load a retro game file from your device and play it in the browser. Keyboard and gamepad supported.">
+<meta name="theme-color" content="#060809">
+<link rel="icon" href="favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="crt">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="bat-cursor" id="bat" aria-hidden="true"></div>
+
+<audio id="ambience" loop preload="none">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
+</audio>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="index.html">LYGO'S LAND</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="play-games.html" aria-current="page">Play</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+    <button id="soundToggle" class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on">🔇</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="hero" style="padding-bottom:1.5rem">
+    <p class="boot">CART SLOT · empty</p>
+    <h1>Load a game</h1>
+    <p class="tagline">Pick the system, choose a file from your device, and it boots here. Nothing uploads anywhere — your files stay in your browser.</p>
+  </section>
+
+  <!-- ------------------------------------------------------------------
+       Loader
+       ------------------------------------------------------------------ -->
+  <section id="loader" class="panel" aria-labelledby="loader-h">
+    <h2 id="loader-h" class="visually-hidden">Game loader</h2>
+
+    <label for="core">System</label>
+    <select id="core">
+      <option value="gba">Game Boy Advance</option>
+      <option value="gb">Game Boy / Color</option>
+      <option value="nes">NES</option>
+      <option value="snes">SNES</option>
+      <option value="n64">Nintendo 64</option>
+      <option value="nds">Nintendo DS</option>
+      <option value="segaMD">Sega Genesis / Mega Drive</option>
+      <option value="segaMS">Sega Master System</option>
+      <option value="segaCD">Sega CD</option>
+      <option value="psx">PlayStation</option>
+      <option value="arcade">Arcade</option>
+    </select>
+
+    <!-- BIOS slot. Only appears for systems that can use one. -->
+    <div id="biosRow" hidden>
+      <label id="biosLabel" for="biosFile">BIOS</label>
+      <div class="slot">
+        <button class="btn btn--ghost" type="button" id="biosPick">Choose BIOS file</button>
+        <span class="slot__name" id="biosName">Nothing loaded</span>
+        <button class="btn btn--ghost" type="button" id="biosClear" hidden>Forget</button>
+      </div>
+      <p class="hint" id="biosHint"></p>
+    </div>
+    <input type="file" id="biosFile" class="visually-hidden" accept=".bin,.rom,.img,.bios,.zip,.7z">
+
+    <label for="file">Game file</label>
+    <div id="drop" class="dropzone" tabindex="0" role="button"
+         aria-label="Choose a game file, or drop one here">
+      <p class="dropzone__main">Drop a game file here</p>
+      <p class="dropzone__sub">or press to browse · .gba .gbc .nes .sfc .n64 .nds .bin .cue .zip</p>
+    </div>
+    <input type="file" id="file" class="visually-hidden"
+           accept=".gb,.gbc,.gba,.nes,.sfc,.smc,.n64,.z64,.v64,.nds,.md,.gen,.sms,.bin,.cue,.iso,.chd,.zip,.7z">
+
+    <p class="form-status" id="status" role="status"></p>
+  </section>
+
+  <!-- ------------------------------------------------------------------
+       Screen. Responsive box instead of the old hardcoded 1000x700.
+       ------------------------------------------------------------------ -->
+  <section id="stage" class="monitor monitor--game" hidden aria-label="Game screen">
+    <span class="monitor__label" id="nowPlaying">running</span>
+    <div id="screen"></div>
+  </section>
+
+  <p id="afterControls" hidden style="margin-top:1rem">
+    <button class="btn btn--ghost" type="button" onclick="location.reload()">Load another game</button>
+  </p>
+
+  <section aria-labelledby="controls-h">
+    <h2 id="controls-h">Controls</h2>
+    <p class="section-note">Click the screen first so it takes your input.</p>
+    <p>Keyboard is mapped by default — arrows to move, Z and X for the face buttons, Enter for start. A USB or Bluetooth gamepad is picked up automatically once you press a button on it. Remap anything from the gear icon in the emulator's own toolbar.</p>
+  </section>
+
+  <section aria-labelledby="bios-h">
+    <h2 id="bios-h">About BIOS files</h2>
+    <p class="section-note">Why some systems ask for one.</p>
+    <p>Disc-based consoles won't start without the firmware that shipped inside the original hardware. This site doesn't hand those out — you supply your own, dumped from a console you own. Whatever you pick is kept in your browser's local storage, so it's a one-time step per system, and it never leaves your device. <strong>Forget</strong> wipes it.</p>
+  </section>
+
+  <noscript>
+    <p style="color:var(--bleed)">This page needs JavaScript to run the emulator.</p>
+  </noscript>
+
+</main>
+
+<footer class="wrap">
+  <p>Emulation by EmulatorJS · bring your own game and BIOS files</p>
+</footer>
+
+<script src="site.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* --------------------------------------------------------------------
+     Which cores can use a BIOS, and how badly they need it.
+     -------------------------------------------------------------------- */
+  const BIOS_INFO = {
+    psx:    { need: "required",    text: "Required. PlayStation games won't boot without it." },
+    segaCD: { need: "required",    text: "Required. Sega CD games won't boot without it." },
+    nds:    { need: "recommended", text: "Recommended. Some DS games need the firmware to start." },
+    gba:    { need: "optional",    text: "Optional. Improves compatibility and restores the boot screen." },
+    n64:    { need: "optional",    text: "Optional." }
+  };
+
+  const els = {
+    core:      document.getElementById("core"),
+    biosRow:   document.getElementById("biosRow"),
+    biosLabel: document.getElementById("biosLabel"),
+    biosHint:  document.getElementById("biosHint"),
+    biosPick:  document.getElementById("biosPick"),
+    biosFile:  document.getElementById("biosFile"),
+    biosName:  document.getElementById("biosName"),
+    biosClear: document.getElementById("biosClear"),
+    drop:      document.getElementById("drop"),
+    file:      document.getElementById("file"),
+    status:    document.getElementById("status"),
+    stage:     document.getElementById("stage"),
+    after:     document.getElementById("afterControls"),
+    nowPlaying: document.getElementById("nowPlaying"),
+    loader:    document.getElementById("loader")
+  };
+
+  let launched = false;
+
+  function say(msg, state) {
+    els.status.textContent = msg || "";
+    els.status.dataset.state = state || "";
+  }
+
+  function humanSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1048576) return Math.round(bytes / 1024) + " KB";
+    return (bytes / 1048576).toFixed(1) + " MB";
+  }
+
+  /* --------------------------------------------------------------------
+     BIOS storage: IndexedDB, because localStorage can't hold binary files.
+     Per-browser and entirely local — no network involved at any point.
+     -------------------------------------------------------------------- */
+  const DB_NAME = "lygosland", STORE = "bios";
+
+  function openDB() {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) return reject(new Error("no indexeddb"));
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore(STORE); };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror   = function () { reject(req.error); };
+    });
+  }
+
+  function run(mode, fn) {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        const t = db.transaction(STORE, mode);
+        const req = fn(t.objectStore(STORE));
+        t.oncomplete = function () { resolve(req ? req.result : null); };
+        t.onerror    = function () { reject(t.error); };
+      });
+    });
+  }
+
+  const biosStore = {
+    put: function (core, file) {
+      return run("readwrite", function (s) {
+        return s.put({ name: file.name, size: file.size, blob: file }, core);
+      });
+    },
+    get: function (core) { return run("readonly",  function (s) { return s.get(core); }); },
+    del: function (core) { return run("readwrite", function (s) { return s.delete(core); }); }
+  };
+
+  /* Fallback for private browsing or blocked storage: keep it in memory so
+     the visitor can still play this session. */
+  const sessionBios = {};
+
+  async function lookupBios(core) {
+    if (sessionBios[core]) return sessionBios[core];
+    try { return (await biosStore.get(core)) || null; }
+    catch (e) { return null; }
+  }
+
+  /* --------------------------------------------------------------------
+     Render the BIOS slot for the selected system.
+     -------------------------------------------------------------------- */
+  async function renderBios() {
+    const core = els.core.value;
+    const info = BIOS_INFO[core];
+
+    if (!info) { els.biosRow.hidden = true; return; }
+
+    els.biosRow.hidden = false;
+    els.biosLabel.textContent = "BIOS — " + info.need;
+    els.biosHint.textContent = info.text + " Kept in this browser only, never uploaded.";
+
+    const saved = await lookupBios(core);
+    if (saved) {
+      els.biosName.textContent = saved.name + " · " + humanSize(saved.size);
+      els.biosName.dataset.state = "ok";
+      els.biosClear.hidden = false;
+      els.biosPick.textContent = "Replace BIOS file";
+    } else {
+      els.biosName.textContent = "Nothing loaded";
+      els.biosName.dataset.state = "";
+      els.biosClear.hidden = true;
+      els.biosPick.textContent = "Choose BIOS file";
+    }
+  }
+
+  els.core.addEventListener("change", function () { say(""); renderBios(); });
+  els.biosPick.addEventListener("click", function () { els.biosFile.click(); });
+
+  els.biosFile.addEventListener("change", async function () {
+    const f = els.biosFile.files[0];
+    if (!f) return;
+    const core = els.core.value;
+
+    sessionBios[core] = { name: f.name, size: f.size, blob: f };
+
+    try {
+      await biosStore.put(core, f);
+      say("BIOS saved for " + els.core.options[els.core.selectedIndex].text + ".", "ok");
+    } catch (e) {
+      say("BIOS loaded for this session. Your browser blocked saving it for next time.", "");
+    }
+    els.biosFile.value = "";
+    renderBios();
+  });
+
+  els.biosClear.addEventListener("click", async function () {
+    const core = els.core.value;
+    delete sessionBios[core];
+    try { await biosStore.del(core); } catch (e) { /* nothing to remove */ }
+    say("BIOS removed.", "");
+    renderBios();
+  });
+
+  /* --------------------------------------------------------------------
+     Game picker
+     -------------------------------------------------------------------- */
+  els.drop.addEventListener("click", function () { els.file.click(); });
+  els.drop.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); els.file.click(); }
+  });
+  els.file.addEventListener("change", function () {
+    if (els.file.files[0]) launch(els.file.files[0]);
+  });
+
+  ["dragenter", "dragover"].forEach(function (ev) {
+    els.drop.addEventListener(ev, function (e) { e.preventDefault(); els.drop.classList.add("is-hot"); });
+  });
+  ["dragleave", "drop"].forEach(function (ev) {
+    els.drop.addEventListener(ev, function (e) { e.preventDefault(); els.drop.classList.remove("is-hot"); });
+  });
+  els.drop.addEventListener("drop", function (e) {
+    const f = e.dataTransfer.files[0];
+    if (f) launch(f);
+  });
+
+  /* --------------------------------------------------------------------
+     Launch.
+     The old page iframed gba.js.org and tried to reach into
+     frame.contentWindow.document to forward keys. That's cross-origin, so
+     the browser blocks it — the input bridge could never have worked. This
+     runs the EmulatorJS build already in the repo, same-origin, so it gets
+     keyboard and gamepad input natively.
+     -------------------------------------------------------------------- */
+  async function launch(f) {
+    // Claim the slot synchronously. If this flag were set after the await
+    // below, two fast triggers (double-click, or a drop landing mid-await)
+    // would both get past the check and boot the emulator twice.
+    if (launched) {
+      say("A game is already running. Reload to switch.", "error");
+      return;
+    }
+    launched = true;
+
+    const core = els.core.value;
+    const info = BIOS_INFO[core];
+    const bios = await lookupBios(core);
+
+    if (info && info.need === "required" && !bios) {
+      launched = false;                    // release it — they can retry
+      say("This system needs a BIOS file first. Load one above, then pick your game.", "error");
+      els.file.value = "";
+      return;
+    }
+
+    const name = f.name.replace(/\.[^.]+$/, "");
+
+    say("Booting " + name + "…");
+    els.stage.hidden = false;
+    els.nowPlaying.textContent = name;
+
+    window.EJS_player        = "#screen";
+    window.EJS_core          = core;
+    window.EJS_gameUrl       = URL.createObjectURL(f);
+    window.EJS_gameName      = name;
+    window.EJS_pathtodata    = "EmulatorJS/data/";   // forward slashes. Backslashes 404 on the web.
+    window.EJS_startOnLoaded = true;
+    window.EJS_color         = "#00ff41";
+    if (bios) window.EJS_biosUrl = URL.createObjectURL(bios.blob);
+
+    const s = document.createElement("script");
+    s.src = "EmulatorJS/data/loader.js";
+    s.onload = function () {
+      say("");
+      els.loader.hidden = true;
+      els.after.hidden = false;
+    };
+    s.onerror = function () {
+      launched = false;
+      els.stage.hidden = true;
+      say("Couldn't find EmulatorJS/data/loader.js. Check that the EmulatorJS folder is committed and the path matches.", "error");
+    };
+    document.body.appendChild(s);
+  }
+
+  renderBios();
+});
+</script>
+</body>
+</html>

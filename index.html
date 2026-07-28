@@ -1,276 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Lygo's Land</title>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" as="style">
-    <link rel="preload" href="https://i.imgur.com/WNLWVDf.jpeg" as="image">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none; /* Hide default cursor */
-        }
+<title>Lygo's Land — retro games in your browser</title>
+<meta name="description" content="A dead-CRT arcade. Load your own retro game files and play them in the browser. No installs.">
+<meta name="theme-color" content="#060809">
+<link rel="icon" href="favicon.ico">
 
-        body {
-            background: url('https://i.imgur.com/WNLWVDf.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: #0f0;
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            min-height: 100vh;
-            width: 100%;
-            overflow-y: auto;
-            position: relative;
-        }
+<!-- Social preview. Point og:image at a 1200x630 image in your repo. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lygo's Land">
+<meta property="og:description" content="A dead-CRT arcade. Load your own retro game files and play them in the browser.">
+<meta property="og:url" content="https://sirlygo.github.io/LygosLand/">
+<meta property="og:image" content="https://sirlygo.github.io/LygosLand/assets/social.png">
+<meta name="twitter:card" content="summary_large_image">
 
-        /* Bat Cursor */
-        .bat-cursor {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            background: url('./bat-animated-arrow.gif') no-repeat center center;
-            background-size: contain;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-            display: none;
-        }
-
-        /* Sound Button */
-        .sound-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: green;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 5px red;
-            font-size: 1.2rem;
-            transition: box-shadow 0.3s ease;
-            z-index: 1000;
-            cursor: pointer;
-        }
-
-        .sound-toggle:hover {
-            box-shadow: 0 0 10px #0f0;
-        }
-
-        /* Welcome Section */
-        .welcome-container {
-            max-width: 600px;
-            width: 100%;
-            padding: 20px;
-            border: 5px solid #0f0;
-            box-shadow: 0 0 15px #0f0, 0 0 20px red;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 5px;
-            margin: 30px auto;
-        }
-
-        h1, h2 {
-            font-family: 'Roboto', sans-serif;
-            text-shadow: 0 0 10px #0f0, 0 0 20px red;
-            animation: glitch 1s infinite alternate;
-            color: #0f0;
-        }
-
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 2px red; }
-            100% { text-shadow: -2px -2px #0f0; }
-        }
-
-        /* Video */
-        .video-wrapper {
-            border: 5px solid #0f0;
-            box-shadow: 0 0 20px #0f0;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            overflow: hidden;
-            max-width: 900px;
-            width: 100%;
-        }
-
-        video {
-            width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        /* Sections Grid */
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            max-width: 900px;
-            width: 100%;
-            margin: 20px auto;
-        }
-
-        .section {
-            flex: 1 1 250px;
-            max-width: 250px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border: 2px solid #0f0;
-            box-shadow: 0 0 15px red, 0 0 10px #0f0;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .section:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px red, 0 0 20px #0f0;
-        }
-
-        /* Stay Updated Box */
-        .stay-updated-box {
-            max-width: 600px;
-            width: 100%;
-            padding: 20px;
-            border: 5px solid #0f0;
-            box-shadow: 0 0 15px #0f0, 0 0 20px red;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 5px;
-            margin: 30px auto;
-            text-align: center;
-        }
-
-        .stay-updated-box input,
-        .stay-updated-box button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            border: 2px solid #0f0;
-            box-shadow: 0 0 10px #0f0;
-            border-radius: 5px;
-        }
-
-        .stay-updated-box button {
-            background-color: #0f0;
-            color: black;
-            transition: background-color 0.3s ease;
-        }
-
-        .stay-updated-box button:hover {
-            background-color: #333;
-        }
-
-    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-    <div class="bat-cursor" id="bat"></div>
+<body class="crt">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="bat-cursor" id="bat" aria-hidden="true"></div>
 
-    <audio id="bgSound" loop>
-        <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
-    </audio>
-    
-    <button id="soundToggle" class="sound-toggle">🔊</button>
+<audio id="ambience" loop preload="none">
+  <!-- Self-host this. Hotlinking mixkit previews can break and is against their terms. -->
+  <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
+</audio>
 
-    <main>
-        <div class="welcome-container">
-            <h1>Welcome to Lygo's Land</h1>
-            <h2>A world of eerie wonders</h2>
-        </div>
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="index.html">LYGO'S LAND</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="index.html" aria-current="page">Home</a></li>
+        <li><a href="play-games.html">Play</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+    <button id="soundToggle" class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on">🔇</button>
+  </div>
+</header>
 
-        <section class="video-wrapper">
-            <video autoplay loop muted playsinline>
-                <source src="https://i.imgur.com/5KMgrJb.mp4" type="video/mp4">
-            </video>
-        </section>
+<main id="main" class="wrap">
 
-        <div class="grid">
-            <div class="section" onclick="window.location.href='Play Games.html'">
-                <h3>Play Games</h3>
-                <p>Enter the darkness...</p>
-            </div>
-            <div class="section">
-                <h3>Profiles</h3>
-                <p>Whispers in the night...</p>
-            </div>
-            <div class="section" onclick="window.location.href='About Me.html'">
-                <h3>About</h3>
-                <p>Neon blood drips...</p>
-            </div>
-            <div class="section" onclick="window.location.href='https://www.lygosland.com'">
-                <h3>Help</h3>
-                <p>Escape or embrace?</p>
-            </div>
-        </div>
+  <section class="hero">
+    <p class="boot">SYS/CRT-01 · signal acquired</p>
+    <h1><span id="typed">Welcome to Lygo's Land</span><span class="caret" aria-hidden="true">_</span></h1>
+    <p class="tagline">A dead arcade that still hums. Load a game file, and it plays right here in the browser.</p>
+  </section>
 
-        <section class="stay-updated-box">
-            <h2>Stay Updated</h2>
-            <form>
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <button type="submit">Subscribe</button>
-            </form>
-        </section>
-    </main>
+  <section class="monitor" aria-label="Ambient loop">
+    <span class="monitor__label">live feed</span>
+    <!-- Self-host: save to assets/hero.mp4 and add a poster frame. -->
+    <video autoplay loop muted playsinline preload="metadata" poster="assets/hero-poster.jpg">
+      <source src="https://i.imgur.com/5KMgrJb.mp4" type="video/mp4">
+    </video>
+  </section>
 
+  <section aria-labelledby="ways-in">
+    <h2 id="ways-in">Ways in</h2>
+    <p class="section-note">Four doors. One of them is still bricked up.</p>
+
+    <div class="cards">
+      <a class="card" href="play-games.html">
+        <h3>Play games</h3>
+        <p>Bring your own game file. It runs in the browser — nothing to install.</p>
+      </a>
+
+      <!-- Was a div that looked clickable and did nothing. Now it says so. -->
+      <div class="card card--offline" aria-disabled="true">
+        <h3>Profiles</h3>
+        <p>Save states and per-player settings.</p>
+        <span class="tag">not built yet</span>
+      </div>
+
+      <a class="card" href="about.html">
+        <h3>About</h3>
+        <p>Who runs this place, and why it looks like 1997.</p>
+      </a>
+
+      <a class="card" href="https://www.lygosland.com" rel="noopener">
+        <h3>Help ↗</h3>
+        <p>Controls, save files, and what to do when a game won't boot. Opens lygosland.com.</p>
+      </a>
+    </div>
+  </section>
+
+  <section aria-labelledby="updates">
+    <h2 id="updates">Stay updated</h2>
+    <p class="section-note">New cores and features, occasionally.</p>
+
+    <div class="panel">
+      <!--
+        TO MAKE THIS WORK: create a free form endpoint (Formspree, Buttondown,
+        Netlify Forms) and paste the URL into data-endpoint below.
+        Until you do, the button stays disabled instead of silently eating
+        people's email addresses like the old version did.
+      -->
+      <form id="signup" data-endpoint="" novalidate>
+        <label for="su-name">Name</label>
+        <input type="text" id="su-name" name="name" autocomplete="name" required>
+
+        <label for="su-email">Email</label>
+        <input type="email" id="su-email" name="email" autocomplete="email" required>
+
+        <button class="btn" type="submit" id="su-submit">Subscribe</button>
+        <p class="form-status" id="su-status" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>Lygo's Land · built by hand · <a href="play-games.html" style="color:var(--phosphor)">enter the arcade</a></p>
+</footer>
+
+<script src="site.js" defer></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Bat Cursor Fix
-        const bat = document.getElementById("bat");
+document.addEventListener("DOMContentLoaded", function () {
+  /* ---- Typewriter on the title (skipped if reduced motion) ---- */
+  const typed = document.getElementById("typed");
+  const reduce = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    : false;
+  if (typed && !reduce) {
+    const full = typed.textContent;
+    typed.textContent = "";
+    let i = 0;
+    (function tick() {
+      typed.textContent = full.slice(0, ++i);
+      if (i < full.length) setTimeout(tick, 45);
+    })();
+  }
 
-        if (bat) {
-            document.addEventListener("mousemove", function (e) {
-                bat.style.display = "block";
-                bat.style.left = e.clientX + "px";
-                bat.style.top = e.clientY + "px";
-            });
+  /* ---- Signup form ---- */
+  const form   = document.getElementById("signup");
+  const status = document.getElementById("su-status");
+  const submit = document.getElementById("su-submit");
+  const endpoint = form.dataset.endpoint;
 
-            document.addEventListener("mouseleave", function () {
-                bat.style.display = "none";
-            });
-        } else {
-            console.error("❌ Bat cursor element not found.");
-        }
+  if (!endpoint) {
+    submit.disabled = true;
+    status.dataset.state = "";
+    status.textContent = "Signups aren't connected yet. Check back soon.";
+  }
 
-        // Sound Toggle Fix
-        const soundToggle = document.getElementById("soundToggle");
-        const bgSound = document.getElementById("bgSound");
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();               // never let this reload and lose the data
+    if (!endpoint) return;
 
-        if (soundToggle && bgSound) {
-            soundToggle.addEventListener("click", function () {
-                if (bgSound.paused) {
-                    bgSound.play().then(() => {
-                        soundToggle.textContent = "🔇"; // Change icon when playing
-                    }).catch(error => {
-                        console.error("❌ Autoplay blocked. User interaction required.", error);
-                    });
-                } else {
-                    bgSound.pause();
-                    soundToggle.textContent = "🔊"; // Change icon when paused
-                }
-            });
-        } else {
-            console.error("❌ Sound toggle button or audio element not found.");
-        }
-    });
+    if (!form.checkValidity()) {
+      status.dataset.state = "error";
+      status.textContent = "Enter a name and a valid email address.";
+      return;
+    }
+
+    submit.disabled = true;
+    status.dataset.state = "";
+    status.textContent = "Sending…";
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form)
+      });
+      if (!res.ok) throw new Error(res.status);
+      status.dataset.state = "ok";
+      status.textContent = "You're on the list.";
+      form.reset();
+    } catch (err) {
+      status.dataset.state = "error";
+      status.textContent = "That didn't send. Try again in a minute.";
+      submit.disabled = false;
+    }
+  });
+});
 </script>
 </body>
 </html>

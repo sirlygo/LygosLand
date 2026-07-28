@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<title>About — Lygo's Land</title>
+<meta name="description" content="Who runs Lygo's Land and why it looks like a dying CRT.">
+<meta name="theme-color" content="#060809">
+<link rel="icon" href="favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="crt">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="bat-cursor" id="bat" aria-hidden="true"></div>
+
+<audio id="ambience" loop preload="none">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
+</audio>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="index.html">LYGO'S LAND</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="play-games.html">Play</a></li>
+        <li><a href="about.html" aria-current="page">About</a></li>
+      </ul>
+    </nav>
+    <button id="soundToggle" class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on">🔇</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="hero" style="padding-bottom:1.5rem">
+    <p class="boot">OPERATOR · lygo</p>
+    <h1>About</h1>
+    <p class="tagline">
+      <!-- YOUR COPY: one or two sentences on what this place is. -->
+      Replace this with your own line.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>The short version</h2>
+    <p class="section-note">Who, what, why.</p>
+    <p>
+      <!-- YOUR COPY: paste your original About text here. Keeping it in a
+           .panel keeps it readable against the background image. -->
+      Paste your About text here.
+    </p>
+  </section>
+
+  <section aria-labelledby="elsewhere">
+    <h2 id="elsewhere">Elsewhere</h2>
+    <p class="section-note">Links out.</p>
+    <div class="cards">
+      <a class="card" href="https://github.com/sirlygo" rel="noopener">
+        <h3>GitHub ↗</h3>
+        <p>Source for this site and everything else.</p>
+      </a>
+      <a class="card" href="https://www.lygosland.com" rel="noopener">
+        <h3>lygosland.com ↗</h3>
+        <p>The main site.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>Lygo's Land · built by hand</p>
+</footer>
+
+<script src="site.js" defer></script>
+</body>
+</html>
