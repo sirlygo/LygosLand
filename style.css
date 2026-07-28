@@ -84,19 +84,51 @@ body {
    image left visitors with no cursor at all. */
 @media (hover: hover) and (pointer: fine) {
   html.bat-on, html.bat-on * { cursor: none; }
+  /* Text fields keep the native I-beam — you can't see where you're typing
+     with a bat over the caret. */
+  html.bat-on input, html.bat-on textarea, html.bat-on [contenteditable] { cursor: auto; }
+  html.bat-text, html.bat-text * { cursor: auto; }
 }
+
 .bat-cursor {
   position: fixed;
   top: 0; left: 0;
-  width: 40px; height: 40px;
-  background: url('./bat-animated-arrow.gif') center / contain no-repeat;
+  width: var(--bat-size, 38px);
+  height: var(--bat-size, 38px);
+  background: url('./bat-animated-arrow.gif') top left / contain no-repeat;
   pointer-events: none;
   z-index: 9500;
   opacity: 0;
-  transform: translate(-50%, -50%);
+  /* The pointer's true position is the image's TIP, not its centre. JS writes
+     --bat-x / --bat-y already offset by the hotspot below. Getting this wrong
+     makes every click land ~20px away from where the user aimed. */
+  transform: translate3d(var(--bat-x, 0px), var(--bat-y, 0px), 0) scale(var(--bat-scale, 1));
+  transform-origin: top left;
+  transition: opacity 0.12s ease;
   will-change: transform;
 }
 html.bat-on .bat-cursor.is-visible { opacity: 1; }
+
+/* Over something clickable — grow slightly so the target reads as live. */
+.bat-cursor.is-hot { --bat-scale: 1.18; }
+/* Pressed — shrink, so a click has physical feedback. */
+.bat-cursor.is-down { --bat-scale: 0.82; }
+
+/* Precision dot at the exact click point. Small, but it removes all doubt
+   about where the cursor actually is. */
+.bat-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 3px; height: 3px;
+  margin: -1px 0 0 -1px;
+  background: var(--bleed);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9501;
+  opacity: 0;
+  transform: translate3d(var(--dot-x, 0px), var(--dot-y, 0px), 0);
+}
+html.bat-on .bat-dot.is-visible { opacity: 0.9; }
 
 /* --------------------------------------------------------------------------
    Layout

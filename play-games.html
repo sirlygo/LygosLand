@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = f.name.replace(/\.[^.]+$/, "");
 
     say("Booting " + name + "…");
-    Lygo.recordPlay(name, core);      // credited to the active profile, if any
+    if (window.Lygo) Lygo.recordPlay(name, core);   // profiles are optional
     els.stage.hidden = false;
     els.nowPlaying.textContent = name;
 
