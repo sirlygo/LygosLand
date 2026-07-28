@@ -22,6 +22,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<script src="profiles.js"></script>
 </head>
 
 <body class="crt">
@@ -40,6 +41,7 @@
       <ul class="nav">
         <li><a href="index.html" aria-current="page">Home</a></li>
         <li><a href="play-games.html">Play</a></li>
+        <li><a href="profiles.html">Profiles</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
     </nav>
@@ -65,7 +67,7 @@
 
   <section aria-labelledby="ways-in">
     <h2 id="ways-in">Ways in</h2>
-    <p class="section-note">Four doors. One of them is still bricked up.</p>
+    <p class="section-note">Four doors.</p>
 
     <div class="cards">
       <a class="card" href="play-games.html">
@@ -73,12 +75,10 @@
         <p>Bring your own game file. It runs in the browser — nothing to install.</p>
       </a>
 
-      <!-- Was a div that looked clickable and did nothing. Now it says so. -->
-      <div class="card card--offline" aria-disabled="true">
+      <a class="card" href="profiles.html">
         <h3>Profiles</h3>
-        <p>Save states and per-player settings.</p>
-        <span class="tag">not built yet</span>
-      </div>
+        <p>Pick who's playing. Each profile keeps its own recently played list.</p>
+      </a>
 
       <a class="card" href="about.html">
         <h3>About</h3>

@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
+<script src="profiles.js"></script>
 </head>
 
 <body class="crt">
@@ -31,6 +32,7 @@
       <ul class="nav">
         <li><a href="index.html">Home</a></li>
         <li><a href="play-games.html" aria-current="page">Play</a></li>
+        <li><a href="profiles.html">Profiles</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
     </nav>
@@ -44,6 +46,7 @@
     <p class="boot">CART SLOT · empty</p>
     <h1>Load a game</h1>
     <p class="tagline">Pick the system, choose a file from your device, and it boots here. Nothing uploads anywhere — your files stay in your browser.</p>
+    <p class="whoami" id="whoami" hidden></p>
   </section>
 
   <!-- ------------------------------------------------------------------
@@ -87,8 +90,17 @@
     </div>
     <input type="file" id="file" class="visually-hidden"
            accept=".gb,.gbc,.gba,.nes,.sfc,.smc,.n64,.z64,.v64,.nds,.md,.gen,.sms,.bin,.cue,.iso,.chd,.zip,.7z">
+  </section>
 
-    <p class="form-status" id="status" role="status"></p>
+  <!-- Status lives OUTSIDE the loader panel, because that panel gets hidden
+       once a game launches — messages written into it would be invisible. -->
+  <p class="form-status" id="status" role="status"></p>
+
+  <section id="diagWrap" hidden aria-labelledby="diag-h">
+    <h2 id="diag-h">Diagnostics</h2>
+    <p class="section-note">What the emulator is actually doing.</p>
+    <pre class="diag" id="diag"></pre>
+    <button class="btn btn--ghost" type="button" id="selftest">Run self-test</button>
   </section>
 
   <!-- ------------------------------------------------------------------
@@ -128,6 +140,75 @@
 <script src="site.js" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+  /* --------------------------------------------------------------------
+     WHERE THE EMULATOR ITSELF COMES FROM.
+     
+     The EmulatorJS folder in this repo is a source checkout: it has
+     data/src/ but not the built emulator.min.js / emulator.min.css, which
+     aren't committed to that project. loader.js runs, fails to find the
+     bundle, and leaves a black screen with no error.
+
+     Default below is the official CDN, which is complete and needs nothing
+     in the repo. Set DEBUG_LOCAL to true only if you have downloaded a
+     *release* build of EmulatorJS (not the source zip) into EmulatorJS/data/.
+     -------------------------------------------------------------------- */
+  const DEBUG_LOCAL = false;
+  const EJS_DATA = DEBUG_LOCAL ? "EmulatorJS/data/" : "https://cdn.emulatorjs.org/stable/data/";
+
+  /* --------------------------------------------------------------------
+     Diagnostics. Everything that fails quietly gets written here so you
+     don't need DevTools open to find out why the screen is black.
+     Add ?debug to the URL to show this panel from the start.
+     -------------------------------------------------------------------- */
+  const diagEl = document.getElementById("diag");
+  const diagWrap = document.getElementById("diagWrap");
+
+  function diag(line) {
+    diagWrap.hidden = false;
+    const t = new Date().toISOString().slice(11, 19);
+    diagEl.textContent += "[" + t + "] " + line + "\n";
+  }
+
+  if (new URLSearchParams(location.search).has("debug")) {
+    diagWrap.hidden = false;
+    window.EJS_DEBUG_XX = true;              // EmulatorJS verbose logging
+    diag("debug mode on · data source: " + EJS_DATA);
+  }
+
+  // Capture phase catches failed <script>/<link>/<img> loads, which do not
+  // bubble and are the usual cause of a silent black screen.
+  window.addEventListener("error", function (e) {
+    const t = e.target;
+    if (t && t !== window && (t.src || t.href)) {
+      diag("FAILED TO LOAD: " + (t.src || t.href));
+    } else if (e.message) {
+      diag("JS ERROR: " + e.message + "  @" + (e.filename || "?") + ":" + (e.lineno || "?"));
+    }
+  }, true);
+
+  window.addEventListener("unhandledrejection", function (e) {
+    diag("PROMISE REJECTED: " + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+
+  document.getElementById("selftest").addEventListener("click", async function () {
+    diag("--- self-test ---");
+    diag("data source: " + EJS_DATA);
+    diag("online: " + navigator.onLine + " · WebAssembly: " + (typeof WebAssembly !== "undefined"));
+    for (const f of ["version.json", "loader.js", "emulator.min.js", "emulator.min.css"]) {
+      try {
+        const r = await fetch(EJS_DATA + f, { cache: "no-store" });
+        diag((r.ok ? "OK   " : "FAIL ") + r.status + "  " + f);
+      } catch (err) {
+        diag("FAIL  network/CORS  " + f + "  (" + err.message + ")");
+      }
+    }
+    const scr = document.getElementById("screen");
+    diag("screen children: " + scr.children.length +
+         " · size: " + scr.clientWidth + "x" + scr.clientHeight);
+    diag("EJS globals set: " + Object.keys(window).filter(k => k.startsWith("EJS_")).join(", "));
+    diag("--- end ---");
+  });
 
   /* --------------------------------------------------------------------
      Which cores can use a BIOS, and how badly they need it.
@@ -327,6 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const name = f.name.replace(/\.[^.]+$/, "");
 
     say("Booting " + name + "…");
+    Lygo.recordPlay(name, core);      // credited to the active profile, if any
     els.stage.hidden = false;
     els.nowPlaying.textContent = name;
 
@@ -334,24 +416,44 @@ document.addEventListener("DOMContentLoaded", function () {
     window.EJS_core          = core;
     window.EJS_gameUrl       = URL.createObjectURL(f);
     window.EJS_gameName      = name;
-    window.EJS_pathtodata    = "EmulatorJS/data/";   // forward slashes. Backslashes 404 on the web.
+    window.EJS_pathtodata    = EJS_DATA;   // forward slashes. Backslashes 404 on the web.
     window.EJS_startOnLoaded = true;
     window.EJS_color         = "#00ff41";
     if (bios) window.EJS_biosUrl = URL.createObjectURL(bios.blob);
 
     const s = document.createElement("script");
-    s.src = "EmulatorJS/data/loader.js";
+    s.src = EJS_DATA + "loader.js";
     s.onload = function () {
       say("");
       els.loader.hidden = true;
       els.after.hidden = false;
+      watchdog();
     };
     s.onerror = function () {
       launched = false;
       els.stage.hidden = true;
-      say("Couldn't find EmulatorJS/data/loader.js. Check that the EmulatorJS folder is committed and the path matches.", "error");
+      say("Couldn't load " + EJS_DATA + "loader.js. Check the path, or switch EJS_DATA to the CDN.", "error");
     };
     document.body.appendChild(s);
+  }
+
+  /* --------------------------------------------------------------------
+     Watchdog. loader.js can load fine and still fail afterwards — a missing
+     bundle, a core that won't download. That used to leave a silent black
+     box. If nothing has rendered inside #screen after 25s, say so.
+     -------------------------------------------------------------------- */
+  function watchdog() {
+    const screen = document.getElementById("screen");
+    setTimeout(function () {
+      const alive = screen.querySelector("canvas") || screen.children.length > 0;
+      if (!alive) {
+        diag("WATCHDOG: 20s elapsed, nothing rendered inside #screen.");
+        diag("screen size: " + screen.clientWidth + "x" + screen.clientHeight);
+        say("The emulator loaded but never started. Press Run self-test below.", "error");
+      } else {
+        diag("watchdog: emulator rendered OK (" + screen.children.length + " child elements)");
+      }
+    }, 20000);
   }
 
   renderBios();

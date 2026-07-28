@@ -418,6 +418,109 @@ input::placeholder { color: rgba(207, 232, 216, 0.35); }
   color: var(--phosphor-dim);
 }
 
+/* --------------------------------------------------------------------------
+   Profiles
+   -------------------------------------------------------------------------- */
+.whoami {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--phosphor-dim);
+}
+.whoami a { color: var(--phosphor); }
+.whoami__avatar { margin-right: 0.35rem; color: var(--phosphor); }
+.whoami__name { color: var(--phosphor); text-transform: uppercase; }
+
+.profile { position: relative; }
+.profile.is-active { box-shadow: var(--glow-soft); }
+.profile.is-active::after {
+  content: "ACTIVE";
+  position: absolute;
+  top: 0.6rem; right: 0.7rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--bleed);
+}
+.profile__avatar {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 0.6rem;
+}
+.profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+.profile__actions .btn {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.6rem;
+}
+
+/* Chip pickers (mark + colour) */
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.chip {
+  padding: 0.5rem 0.8rem;
+  background: transparent;
+  color: var(--phosphor-dim);
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 3px;
+  font-family: var(--body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+.chip--glyph { font-size: 1.1rem; line-height: 1; min-width: 44px; }
+.chip.is-on {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.empty {
+  padding: 1.5rem;
+  border: 1px dashed var(--phosphor-dim);
+  border-radius: 4px;
+  color: var(--phosphor-dim);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.recent { list-style: none; margin: 0; padding: 0; }
+.recent li {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.7rem 0;
+  border-bottom: var(--rule);
+  font-size: 0.8rem;
+}
+.recent__name { color: var(--bone); }
+.recent__meta { color: var(--phosphor-dim); font-size: 0.72rem; }
+
+/* Diagnostics output */
+.diag {
+  max-height: 300px;
+  overflow: auto;
+  padding: 1rem;
+  margin: 0 0 1rem;
+  background: #000;
+  border: 1px solid var(--phosphor-dim);
+  border-radius: 3px;
+  font-family: var(--body);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--phosphor);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 /* Was hardcoded 1000x700, which overflowed anything smaller than a desktop. */
 .monitor--game { margin-top: 2rem; }
 .monitor--game #screen {
