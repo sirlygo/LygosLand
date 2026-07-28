@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<title>Profiles — Lygo's Land</title>
+<meta name="description" content="Pick who's playing. Each profile keeps its own recently played list and colour.">
+<meta name="theme-color" content="#060809">
+<link rel="icon" href="favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="profiles.js"></script>
+</head>
+
+<body class="crt">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="bat-cursor" id="bat" aria-hidden="true"></div>
+
+<audio id="ambience" loop preload="none">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
+</audio>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="index.html">LYGO'S LAND</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="play-games.html">Play</a></li>
+        <li><a href="profiles.html" aria-current="page">Profiles</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+    <button id="soundToggle" class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on">🔇</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="hero" style="padding-bottom:1.5rem">
+    <p class="boot">PLAYER SELECT</p>
+    <h1>Profiles</h1>
+    <p class="tagline">Pick who's playing. Each profile keeps its own recently played list and colours the site to taste. Stored in this browser — no account, no password.</p>
+  </section>
+
+  <section aria-labelledby="who-h">
+    <h2 id="who-h">Who's playing</h2>
+    <p class="section-note" id="countNote">Select a profile to make it active.</p>
+    <div class="cards" id="profileList"></div>
+    <p class="empty" id="emptyState" hidden>No profiles yet. Make the first one below.</p>
+  </section>
+
+  <section aria-labelledby="new-h">
+    <h2 id="new-h">New profile</h2>
+    <p class="section-note">Up to eight.</p>
+
+    <div class="panel">
+      <label for="pname">Name</label>
+      <input type="text" id="pname" maxlength="24" autocomplete="off" placeholder="Lygo">
+
+      <label id="avatarLabel">Mark</label>
+      <div class="picker" id="avatarPicker" role="radiogroup" aria-labelledby="avatarLabel"></div>
+
+      <label id="accentLabel">Colour</label>
+      <div class="picker" id="accentPicker" role="radiogroup" aria-labelledby="accentLabel"></div>
+
+      <button class="btn" type="button" id="createBtn">Create profile</button>
+      <p class="form-status" id="status" role="status"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="recent-h" id="recentSection" hidden>
+    <h2 id="recent-h">Recently played</h2>
+    <p class="section-note" id="recentNote"></p>
+    <ul class="recent" id="recentList"></ul>
+  </section>
+
+  <noscript><p style="color:var(--bleed)">Profiles need JavaScript.</p></noscript>
+
+</main>
+
+<footer class="wrap">
+  <p>Profiles live in this browser only · clearing site data removes them</p>
+</footer>
+
+<script src="site.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const listEl   = document.getElementById("profileList");
+  const emptyEl  = document.getElementById("emptyState");
+  const countEl  = document.getElementById("countNote");
+  const statusEl = document.getElementById("status");
+  const nameEl   = document.getElementById("pname");
+  const avatarEl = document.getElementById("avatarPicker");
+  const accentEl = document.getElementById("accentPicker");
+  const recentSec  = document.getElementById("recentSection");
+  const recentList = document.getElementById("recentList");
+  const recentNote = document.getElementById("recentNote");
+
+  let pickedAvatar = Lygo.AVATARS[0];
+  let pickedAccent = "phosphor";
+
+  function say(msg, state) {
+    statusEl.textContent = msg || "";
+    statusEl.dataset.state = state || "";
+  }
+
+  const CORE_NAMES = {
+    gba: "Game Boy Advance", gb: "Game Boy", nes: "NES", snes: "SNES",
+    n64: "Nintendo 64", nds: "Nintendo DS", segaMD: "Genesis",
+    segaMS: "Master System", segaCD: "Sega CD", psx: "PlayStation", arcade: "Arcade"
+  };
+
+  function ago(ts) {
+    const mins = Math.round((Date.now() - ts) / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return mins + "m ago";
+    const hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + "h ago";
+    return Math.round(hrs / 24) + "d ago";
+  }
+
+  /* ---- Pickers ---- */
+  Lygo.AVATARS.forEach(function (glyph, i) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip chip--glyph" + (i === 0 ? " is-on" : "");
+    b.textContent = glyph;
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", i === 0 ? "true" : "false");
+    b.setAttribute("aria-label", "Mark " + (i + 1));
+    b.addEventListener("click", function () {
+      pickedAvatar = glyph;
+      [...avatarEl.children].forEach(function (c) {
+        c.classList.toggle("is-on", c === b);
+        c.setAttribute("aria-checked", c === b ? "true" : "false");
+      });
+    });
+    avatarEl.appendChild(b);
+  });
+
+  Lygo.ACCENTS.forEach(function (a, i) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip" + (i === 0 ? " is-on" : "");
+    b.textContent = a.label;
+    b.style.borderColor = a.hex;
+    b.style.color = a.hex;
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", i === 0 ? "true" : "false");
+    b.addEventListener("click", function () {
+      pickedAccent = a.id;
+      [...accentEl.children].forEach(function (c) {
+        c.classList.toggle("is-on", c === b);
+        c.setAttribute("aria-checked", c === b ? "true" : "false");
+      });
+    });
+    accentEl.appendChild(b);
+  });
+
+  /* ---- Render ---- */
+  function render() {
+    const profiles = Lygo.list();
+    const current = Lygo.active();
+    listEl.innerHTML = "";
+    emptyEl.hidden = profiles.length > 0;
+    countEl.textContent = profiles.length
+      ? profiles.length + " of 8 profiles · the highlighted one is active."
+      : "Select a profile to make it active.";
+
+    profiles.forEach(function (p) {
+      const accent = Lygo.accentOf(p.accent);
+      const card = document.createElement("div");
+      card.className = "card profile" + (current && current.id === p.id ? " is-active" : "");
+      card.style.borderColor = accent.hex;
+
+      const glyph = document.createElement("span");
+      glyph.className = "profile__avatar";
+      glyph.style.color = accent.hex;
+      glyph.textContent = p.avatar;
+
+      const h = document.createElement("h3");
+      h.textContent = p.name;
+
+      const meta = document.createElement("p");
+      const last = p.recent && p.recent[0];
+      meta.textContent = (p.plays || 0) + (p.plays === 1 ? " game launched" : " games launched")
+                       + (last ? " · last: " + last.name : "");
+
+      const row = document.createElement("div");
+      row.className = "profile__actions";
+
+      const use = document.createElement("button");
+      use.type = "button";
+      use.className = "btn btn--ghost";
+      use.textContent = (current && current.id === p.id) ? "Active" : "Use this";
+      use.disabled = !!(current && current.id === p.id);
+      use.addEventListener("click", function () {
+        Lygo.setActive(p.id);
+        Lygo.applyTheme();
+        Lygo.renderWhoami();
+        say("Now playing as " + p.name + ".", "ok");
+        render();
+      });
+
+      const ren = document.createElement("button");
+      ren.type = "button";
+      ren.className = "btn btn--ghost";
+      ren.textContent = "Rename";
+      ren.addEventListener("click", function () {
+        const next = prompt("New name for " + p.name + ":", p.name);
+        if (next === null) return;
+        const res = Lygo.update(p.id, { name: next });
+        say(res.ok ? "Renamed." : res.error, res.ok ? "ok" : "error");
+        render();
+      });
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "btn btn--ghost";
+      del.textContent = "Delete";
+      del.addEventListener("click", function () {
+        if (!confirm("Delete " + p.name + "? Their recently played list goes too.")) return;
+        Lygo.remove(p.id);
+        Lygo.applyTheme();
+        Lygo.renderWhoami();
+        say("Deleted " + p.name + ".", "");
+        render();
+      });
+
+      row.append(use, ren, del);
+      card.append(glyph, h, meta, row);
+      listEl.appendChild(card);
+    });
+
+    /* Recently played for whoever is active */
+    const cur = Lygo.active();
+    if (cur && cur.recent && cur.recent.length) {
+      recentSec.hidden = false;
+      recentNote.textContent = "What " + cur.name + " has been playing.";
+      recentList.innerHTML = "";
+      cur.recent.forEach(function (r) {
+        const li = document.createElement("li");
+        const name = document.createElement("span");
+        name.className = "recent__name";
+        name.textContent = r.name;
+        const meta = document.createElement("span");
+        meta.className = "recent__meta";
+        meta.textContent = (CORE_NAMES[r.core] || r.core) + " · " +
+                           r.count + "x · " + ago(r.last);
+        li.append(name, meta);
+        recentList.appendChild(li);
+      });
+    } else {
+      recentSec.hidden = true;
+    }
+  }
+
+  document.getElementById("createBtn").addEventListener("click", function () {
+    const res = Lygo.create(nameEl.value, pickedAvatar, pickedAccent);
+    if (!res.ok) { say(res.error, "error"); return; }
+    nameEl.value = "";
+    Lygo.applyTheme();
+    Lygo.renderWhoami();
+    say("Created " + res.profile.name + " and switched to them.", "ok");
+    render();
+  });
+
+  nameEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("createBtn").click();
+  });
+
+  render();
+});
+</script>
+</body>
+</html>
