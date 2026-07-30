@@ -20,11 +20,12 @@
 
   if (bat && finePointer) {
     /* HOTSPOT — where the click actually happens inside the image.
-       The arrow's tip is near the top-left of the GIF, so the image is drawn
-       up and left of the pointer by this much. If clicks still feel off,
-       nudge these two numbers; nothing else needs changing. */
-    const HOT_X = 3;
-    const HOT_Y = 2;
+       Measured from bat-animated-arrow.gif: the arrow tip is at pixel (0,0)
+       in all five frames, so the image sits flush with the pointer and no
+       offset is needed. If you swap the GIF for one whose point isn't in the
+       top-left corner, set these to the tip's position instead. */
+    const HOT_X = 0;
+    const HOT_Y = 0;
 
     /* A red dot marks the true click point so there's never any ambiguity. */
     const dot = document.createElement("div");
