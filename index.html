@@ -112,6 +112,16 @@
         <button class="btn" type="submit" id="su-submit">Subscribe</button>
         <p class="form-status" id="su-status" role="status"></p>
       </form>
+
+      <!-- Shown instead of the form once subscribed. Replacing the form
+           matters: an empty form under a success message reads as though
+           nothing happened. -->
+      <div id="su-done" hidden>
+        <p class="su-done__line"><span class="su-done__mark">&#10003;</span> You're on the list.</p>
+        <p class="hint" style="margin:0" id="su-doneNote">New cores and features will land in your inbox.</p>
+        <button class="btn btn--ghost" type="button" id="su-undo"
+                style="margin-top:1rem">Use a different email</button>
+      </div>
     </div>
   </section>
 
@@ -146,6 +156,37 @@ document.addEventListener("DOMContentLoaded", function () {
   const form   = document.getElementById("signup");
   const status = document.getElementById("su-status");
   const submit = document.getElementById("su-submit");
+  const done   = document.getElementById("su-done");
+  const doneNote = document.getElementById("su-doneNote");
+  const SUB_KEY = "lygosland.subscribed";
+
+  /* Swap the form for a confirmation. Remembered across visits so returning
+     subscribers aren't asked again. */
+  function showSubscribed(email) {
+    form.hidden = true;
+    done.hidden = false;
+    doneNote.textContent = email
+      ? "News goes to " + email + "."
+      : "New cores and features will land in your inbox.";
+  }
+  function showForm() {
+    done.hidden = true;
+    form.hidden = false;
+    status.textContent = "";
+    status.dataset.state = "";
+    submit.disabled = false;
+  }
+
+  try {
+    const prev = localStorage.getItem(SUB_KEY);
+    if (prev) showSubscribed(prev === "1" ? null : prev);
+  } catch (e) { /* storage blocked; just show the form */ }
+
+  document.getElementById("su-undo").addEventListener("click", function () {
+    try { localStorage.removeItem(SUB_KEY); } catch (e) {}
+    showForm();
+    document.getElementById("su-email").focus();
+  });
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();                 // never reload and lose the data
@@ -171,9 +212,10 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (res.ok) {
-      status.dataset.state = "ok";
-      status.textContent = "You're on the list.";
+      const email = document.getElementById("su-email").value.trim();
+      try { localStorage.setItem(SUB_KEY, email); } catch (e) {}
       form.reset();
+      showSubscribed(email);
     } else {
       status.dataset.state = "error";
       status.textContent = res.error;

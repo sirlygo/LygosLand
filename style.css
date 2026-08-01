@@ -641,6 +641,27 @@ input::placeholder { color: rgba(207, 232, 216, 0.35); }
 .rom__meta { font-size: 0.68rem; color: var(--phosphor-dim); }
 .rom__more { padding: 0.7rem 0.9rem; font-size: 0.72rem; color: var(--phosphor-dim); }
 
+/* Subscribed confirmation */
+.su-done__line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.4rem;
+  font-family: var(--display);
+  font-size: 0.85rem;
+  color: var(--phosphor);
+}
+.su-done__mark {
+  display: grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  flex: 0 0 26px;
+  border: 1px solid var(--phosphor);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  box-shadow: var(--glow-soft);
+}
+
 /* Stored game cards */
 .game { border-style: solid; }
 .game h3 { word-break: break-word; }
