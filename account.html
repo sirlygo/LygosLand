@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+<title>Account — Lygo's Land</title>
+<meta name="description" content="Sign in to carry your profiles, saves and playtime to another device.">
+<meta name="theme-color" content="#060809">
+<link rel="icon" href="favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="profiles.js"></script>
+</head>
+
+<body class="crt">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="bat-cursor" id="bat" aria-hidden="true"></div>
+
+<audio id="ambience" loop preload="none">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2482/2482-preview.mp3" type="audio/mpeg">
+</audio>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="index.html">LYGO'S LAND</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="play-games.html">Play</a></li>
+        <li><a href="profiles.html">Profiles</a></li>
+        <li><a href="account.html" aria-current="page">Account</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+    <button id="soundToggle" class="sound" type="button" aria-pressed="false" aria-label="Turn ambient sound on">🔇</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="hero" style="padding-bottom:1.5rem">
+    <p class="boot">ACCOUNT</p>
+    <h1>Sign in</h1>
+    <p class="tagline">Optional. Everything works without an account — signing in just carries your profiles, playtime and favourites to another device.</p>
+  </section>
+
+  <!-- Signed OUT -->
+  <section id="signedOut" hidden aria-labelledby="so-h">
+    <h2 id="so-h">Create an account</h2>
+    <p class="section-note">Email and a password. Nothing else is collected.</p>
+
+    <div class="panel">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="At least 6 characters">
+
+      <div class="profile__actions" style="margin-top:0">
+        <button class="btn" type="button" id="signUpBtn">Create account</button>
+        <button class="btn btn--ghost" type="button" id="signInBtn">I already have one</button>
+        <button class="btn btn--ghost" type="button" id="resetBtn">Forgot password</button>
+      </div>
+      <p class="form-status" id="status" role="status"></p>
+    </div>
+
+    <p class="hint" style="margin-top:1rem">
+      Your profiles on this device are kept. When you create an account they're
+      uploaded as the starting point, not replaced.
+    </p>
+  </section>
+
+  <!-- Signed IN -->
+  <section id="signedIn" hidden aria-labelledby="si-h">
+    <h2 id="si-h">Signed in</h2>
+    <p class="section-note" id="whoNote"></p>
+
+    <div class="panel">
+      <dl class="stats">
+        <dt>Email</dt><dd id="accEmail"></dd>
+        <dt>Profiles synced</dt><dd id="accCount"></dd>
+        <dt>Last sync</dt><dd id="accSync">—</dd>
+      </dl>
+
+      <div class="profile__actions">
+        <button class="btn" type="button" id="syncBtn">Sync now</button>
+        <button class="btn btn--ghost" type="button" id="signOutBtn">Sign out</button>
+      </div>
+      <p class="form-status" id="status2" role="status"></p>
+    </div>
+
+    <h2 style="margin-top:3rem">Danger zone</h2>
+    <p class="section-note">Permanent.</p>
+    <div class="panel">
+      <p style="margin-top:0">
+        Deleting your account removes the cloud copy and the login. Profiles
+        stored on this device are left alone.
+      </p>
+      <button class="btn btn--ghost" type="button" id="deleteBtn"
+              style="border-color:var(--bleed);color:var(--bleed)">Delete account</button>
+      <p class="form-status" id="status3" role="status"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="what-h">
+    <h2 id="what-h">What syncs</h2>
+    <p class="section-note">And what deliberately doesn't.</p>
+    <ul class="recent">
+      <li><span class="recent__name">Profiles, marks and colours</span><span class="recent__meta">synced</span></li>
+      <li><span class="recent__name">Playtime, favourites, recently played</span><span class="recent__meta">synced</span></li>
+      <li><span class="recent__name">Game files and BIOS files</span><span class="recent__meta">stay on your device</span></li>
+      <li><span class="recent__name">Emulator save states</span><span class="recent__meta">stay on your device</span></li>
+    </ul>
+    <p class="hint" style="margin-top:1rem">
+      Game files aren't uploaded on purpose. It would mean hosting copyrighted
+      files on a server, and it would cost money — this way the site stays free
+      and your files stay yours. Use the ROM folder picker on the Play page to
+      point each device at its own collection.
+    </p>
+  </section>
+
+  <noscript><p style="color:var(--bleed)">Accounts need JavaScript.</p></noscript>
+
+</main>
+
+<footer class="wrap">
+  <p>Accounts are optional · your games never leave your device</p>
+</footer>
+
+<script src="site.js" defer></script>
+<script type="module" src="auth.js"></script>
+<script type="module">
+const wait = () => new Promise(r => setTimeout(r, 60));
+await wait();                          // let auth.js define window.LygoAuth
+
+const $ = (id) => document.getElementById(id);
+const outEl = $("signedOut"), inEl = $("signedIn");
+
+function say(el, msg, state) {
+  el.textContent = msg || "";
+  el.dataset.state = state || "";
+}
+
+function paint(user) {
+  outEl.hidden = !!user;
+  inEl.hidden = !user;
+  if (user) {
+    $("accEmail").textContent = user.email;
+    $("accCount").textContent = String((Lygo.list() || []).length);
+    $("whoNote").textContent = "Your profiles are backed up and will follow you to other devices.";
+  }
+}
+
+LygoAuth.onChange(paint);
+
+$("signUpBtn").addEventListener("click", async () => {
+  const s = $("status");
+  say(s, "Creating account…");
+  const r = await LygoAuth.signUp($("email").value, $("password").value);
+  say(s, r.ok ? "Account created and profiles uploaded." : r.error, r.ok ? "ok" : "error");
+});
+
+$("signInBtn").addEventListener("click", async () => {
+  const s = $("status");
+  say(s, "Signing in…");
+  const r = await LygoAuth.signIn($("email").value, $("password").value);
+  say(s, r.ok ? "Signed in and synced." : r.error, r.ok ? "ok" : "error");
+  if (r.ok) { Lygo.applyTheme(); Lygo.renderWhoami(); }
+});
+
+$("resetBtn").addEventListener("click", async () => {
+  const s = $("status");
+  const email = $("email").value.trim();
+  if (!email) { say(s, "Enter your email first, then press this.", "error"); return; }
+  const r = await LygoAuth.reset(email);
+  say(s, r.ok ? "Reset email sent. Check your inbox." : r.error, r.ok ? "ok" : "error");
+});
+
+$("syncBtn").addEventListener("click", async () => {
+  const s = $("status2");
+  say(s, "Syncing…");
+  const r = await LygoAuth.syncNow();
+  if (r.ok) {
+    $("accSync").textContent = new Date().toLocaleTimeString();
+    $("accCount").textContent = String((Lygo.list() || []).length);
+    Lygo.applyTheme(); Lygo.renderWhoami();
+  }
+  say(s, r.ok ? "Up to date." : (r.error || "Sync failed."), r.ok ? "ok" : "error");
+});
+
+$("signOutBtn").addEventListener("click", async () => {
+  const s = $("status2");
+  say(s, "Saving and signing out…");
+  const r = await LygoAuth.signOut();
+  say(s, r.ok ? "Signed out. Your profiles are still on this device." : r.error, r.ok ? "ok" : "error");
+});
+
+$("deleteBtn").addEventListener("click", async () => {
+  const s = $("status3");
+  if (!confirm("Delete your account and its cloud backup? Profiles on this device are kept. This can't be undone.")) return;
+  say(s, "Deleting…");
+  const r = await LygoAuth.deleteAccount();
+  say(s, r.ok ? "Account deleted." : r.error, r.ok ? "ok" : "error");
+});
+</script>
+</body>
+</html>

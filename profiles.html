@@ -33,6 +33,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="play-games.html">Play</a></li>
         <li><a href="profiles.html" aria-current="page">Profiles</a></li>
+        <li><a href="account.html">Account</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
     </nav>
@@ -101,6 +102,7 @@
 </footer>
 
 <script src="site.js" defer></script>
+<script type="module" src="auth.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const listEl   = document.getElementById("profileList");
@@ -177,6 +179,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* ---- Render ---- */
   function render() {
+    // Any render follows a change; nudge the cloud if signed in. No-op otherwise.
+    if (window.LygoAuth && LygoAuth.user()) LygoAuth.push();
     const profiles = Lygo.list();
     const current = Lygo.active();
     listEl.innerHTML = "";

@@ -33,6 +33,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="play-games.html" aria-current="page">Play</a></li>
         <li><a href="profiles.html">Profiles</a></li>
+        <li><a href="account.html">Account</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
     </nav>
@@ -47,6 +48,7 @@
     <h1>Load a game</h1>
     <p class="tagline">Pick the system, choose a file from your device, and it boots here. Nothing uploads anywhere — your files stay in your browser.</p>
     <p class="whoami" id="whoami" hidden></p>
+    <p class="whoami" id="authbadge" hidden></p>
   </section>
 
   <section id="folderSection" aria-labelledby="folder-h">
@@ -177,6 +179,7 @@
 </footer>
 
 <script src="site.js" defer></script>
+<script type="module" src="auth.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 

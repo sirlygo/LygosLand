@@ -212,6 +212,46 @@ window.Lygo = (function () {
     return p ? p.name + " \u00B7 " + gameName : gameName;
   }
 
+  /* ----------------------------------------------------------------------
+     Sync hooks. Used by auth.js; harmless if no account is ever created.
+     ---------------------------------------------------------------------- */
+
+  /* Everything worth syncing, as a plain object. */
+  function dump() { return read(); }
+
+  /* Merge a remote copy into the local one.
+     Per profile, whichever side has the higher `rev` wins; ties break on
+     `updated`. Profiles that exist on only one side are kept. This is
+     last-write-wins at profile granularity — good enough when one person
+     uses a few devices, and it never silently destroys a whole profile. */
+  function mergeRemote(remote) {
+    const local = read();
+    if (!remote || !Array.isArray(remote.profiles)) return { changed: false, data: local };
+
+    const byId = {};
+    local.profiles.forEach(function (p) { byId[p.id] = p; });
+
+    let changed = false;
+    remote.profiles.forEach(function (r) {
+      upgrade(r);
+      const mine = byId[r.id];
+      if (!mine) { byId[r.id] = r; changed = true; return; }
+      const rNewer = (r.rev || 1) > (mine.rev || 1) ||
+                     ((r.rev || 1) === (mine.rev || 1) && (r.updated || 0) > (mine.updated || 0));
+      if (rNewer) { byId[r.id] = r; changed = true; }
+    });
+
+    const merged = {
+      profiles: Object.keys(byId).map(function (k) { return byId[k]; }).slice(0, MAX_PROFILES),
+      activeId: local.activeId || remote.activeId || null
+    };
+    if (!merged.profiles.some(function (p) { return p.id === merged.activeId; })) {
+      merged.activeId = merged.profiles.length ? merged.profiles[0].id : null;
+    }
+    write(merged);
+    return { changed: changed, data: merged };
+  }
+
   function accentOf(id) {
     return ACCENTS.find(a => a.id === id) || ACCENTS[0];
   }
@@ -277,6 +317,8 @@ window.Lygo = (function () {
     isFavourite: isFavourite,
     scope: scope,
     saveNameFor: saveNameFor,
+    dump: dump,
+    mergeRemote: mergeRemote,
     accentOf: accentOf,
     applyTheme: applyTheme,
     humanTime: humanTime,
