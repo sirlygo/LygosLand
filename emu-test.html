@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EmulatorJS bisect test</title>
+<style>
+  body { margin: 0; padding: 20px; background: #111; color: #eee;
+         font-family: monospace; }
+  #game { width: 640px; height: 480px; max-width: 100%; }
+  #log { margin-top: 16px; padding: 10px; background: #000; border: 1px solid #444;
+         white-space: pre-wrap; font-size: 12px; max-height: 260px; overflow: auto; }
+  select, button { font-family: monospace; padding: 6px; margin-right: 8px; }
+</style>
+</head>
+<body>
+
+<h1>EmulatorJS bisect test</h1>
+<p>
+  This page has <strong>none</strong> of Lygo's Land's CSS, fonts, cursor, CRT
+  overlay, or custom JavaScript. It is the official EmulatorJS embed example
+  with a file picker bolted on.
+</p>
+<p>
+  <strong>If a ROM runs here but not on the Play page</strong>, the fault is in
+  my code.<br>
+  <strong>If it fails here too</strong>, the fault is outside the page —
+  an extension, a network block, or the browser.
+</p>
+
+<p>
+  <select id="core">
+    <option value="gba">GBA</option>
+    <option value="gb">Game Boy</option>
+    <option value="nes">NES</option>
+    <option value="snes">SNES</option>
+    <option value="segaMD">Genesis</option>
+  </select>
+  <input type="file" id="rom">
+</p>
+
+<div style="width:100%;max-width:640px">
+  <div id="game"></div>
+</div>
+
+<div id="log">log:
+</div>
+
+<script>
+const log = (m) => { document.getElementById('log').textContent += m + "\n"; };
+const CDN = "https://cdn.emulatorjs.org/stable/data/";
+
+// Catch anything that fails to load.
+window.addEventListener('error', (e) => {
+  const t = e.target;
+  if (t && t !== window && (t.src || t.href)) log("FAILED TO LOAD: " + (t.src || t.href));
+  else if (e.message) log("JS ERROR: " + e.message);
+}, true);
+
+// Reachability check on page load, before any ROM is chosen.
+(async () => {
+  log("checking CDN reachability...");
+  for (const f of ["version.json", "loader.js", "emulator.min.js"]) {
+    try {
+      const r = await fetch(CDN + f, { cache: "no-store" });
+      log((r.ok ? "OK   " : "FAIL ") + r.status + "  " + f);
+    } catch (err) {
+      log("FAIL  blocked/CORS  " + f + "  (" + err.message + ")");
+    }
+  }
+  log("WebAssembly supported: " + (typeof WebAssembly !== "undefined"));
+  log("ready — pick a ROM.");
+})();
+
+document.getElementById('rom').addEventListener('change', function () {
+  const f = this.files[0];
+  if (!f) return;
+  log("loading " + f.name + " as " + document.getElementById('core').value);
+
+  window.EJS_player = "#game";
+  window.EJS_core = document.getElementById('core').value;
+  window.EJS_gameUrl = URL.createObjectURL(f);
+  window.EJS_pathtodata = CDN;
+  window.EJS_startOnLoaded = true;
+  window.EJS_DEBUG_XX = true;
+
+  const s = document.createElement('script');
+  s.src = CDN + "loader.js";
+  s.onload = () => {
+    log("loader.js executed");
+    setTimeout(() => {
+      const g = document.getElementById('game');
+      log("after 15s — #game children: " + g.children.length +
+          ", canvas: " + !!g.querySelector('canvas'));
+    }, 15000);
+  };
+  s.onerror = () => log("loader.js FAILED to load from " + CDN);
+  document.body.appendChild(s);
+});
+</script>
+</body>
+</html>

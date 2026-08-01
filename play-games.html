@@ -143,6 +143,12 @@
     <div id="screen"></div>
   </section>
 
+  <p id="touchTip" class="hint" hidden style="margin-top:1rem">
+    On a phone, tap the fullscreen icon in the emulator's toolbar and turn the
+    device sideways — the picture gets bigger and the on-screen buttons move to
+    the sides. The gamepad icon in the same toolbar hides or shows the controls.
+  </p>
+
   <p id="afterControls" hidden style="margin-top:1rem">
     <button class="btn btn--ghost" type="button" onclick="location.reload()">Load another game</button>
   </p>
@@ -817,6 +823,28 @@ document.addEventListener("DOMContentLoaded", function () {
     window.EJS_pathtodata    = EJS_DATA;   // forward slashes. Backslashes 404 on the web.
     window.EJS_startOnLoaded = true;
     window.EJS_color         = "#00ff41";
+
+    /* Touch devices: turn the virtual gamepad on explicitly rather than
+       relying on auto-detection, which misses some tablets and any desktop
+       browser in device-emulation mode. */
+    const isTouch = (window.matchMedia
+                      ? window.matchMedia("(hover: none), (pointer: coarse)").matches
+                      : false)
+                    || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      window.EJS_VirtualGamepadSettings = undefined;  // use the core's defaults
+      window.EJS_Buttons = {
+        playPause: true, restart: true, settings: true,
+        fullscreen: true, saveState: true, loadState: true,
+        gamepad: true, cheat: false, volume: true,
+        screenRecord: false, screenshot: false,
+        quickSave: false, quickLoad: false,
+        netplay: false, contextMenu: false, diskButton: false
+      };
+      // Stop iOS double-tap zoom from swallowing rapid button presses.
+      document.getElementById("screen").style.touchAction = "none";
+    }
+
     if (bios) window.EJS_biosUrl = URL.createObjectURL(bios.blob);
 
     const s = document.createElement("script");
@@ -825,6 +853,17 @@ document.addEventListener("DOMContentLoaded", function () {
       say("");
       els.loader.hidden = true;
       els.after.hidden = false;
+      // Put the screen at the top of the viewport — on a phone the loader
+      // above it would otherwise leave the game half off-screen.
+      setTimeout(function () {
+        if (els.stage.scrollIntoView) {
+          els.stage.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 300);
+      if (isTouch) {
+        const tip = document.getElementById("touchTip");
+        if (tip) tip.hidden = false;
+      }
       watchdog();
     };
     s.onerror = function () {

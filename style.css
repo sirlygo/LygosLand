@@ -597,8 +597,27 @@ input::placeholder { color: rgba(207, 232, 216, 0.35); }
   width: 100%;
   aspect-ratio: 4 / 3;
   background: #000;
+  /* Without this, a swipe on the D-pad scrolls the page instead of moving
+     the character — the single most common reason touch "doesn't work". */
+  touch-action: none;
 }
-.monitor--game #screen > div { width: 100% !important; height: 100% !important; }
+
+/* On touch devices the emulator draws a virtual gamepad BELOW the video, so a
+   locked 4:3 box either crops the pad or squashes the picture. Let it size
+   itself, and give it most of the viewport to work with. */
+@media (hover: none), (pointer: coarse) {
+  .monitor--game #screen {
+    aspect-ratio: auto;
+    min-height: 78vh;
+  }
+  /* EmulatorJS positions its own controls; forcing 100% height on its child
+     broke that layout. Only the width is ours to set. */
+  .monitor--game #screen > div { width: 100% !important; }
+  /* The CRT overlay sits at z-index 9000, above the emulator's menu. It
+     ignores clicks, but the scanlines make small controls hard to read. */
+  .crt::before { opacity: 0.25; }
+  .crt::after { display: none; }
+}
 
 /* --------------------------------------------------------------------------
    Footer
