@@ -150,6 +150,7 @@
   </p>
 
   <p id="afterControls" hidden style="margin-top:1rem">
+    <button class="btn btn--ghost" type="button" id="favBtn" hidden>Add to favourites</button>
     <button class="btn btn--ghost" type="button" onclick="location.reload()">Load another game</button>
   </p>
 
@@ -338,7 +339,16 @@ document.addEventListener("DOMContentLoaded", function () {
      Play instead of hunting for the file again. Blob URLs die on reload,
      so the bytes themselves have to live in IndexedDB.
      -------------------------------------------------------------------- */
-  function gameId(name, core, size) { return core + "::" + name + "::" + size; }
+  /* Games belong to a profile. The owner prefix is what makes one player's
+     library invisible to another; with no profile selected they go under
+     "shared" so nothing is orphaned. */
+  function owner() { return (window.Lygo ? Lygo.scope() : "shared"); }
+  function gameId(name, core, size) {
+    return owner() + "||" + core + "::" + name + "::" + size;
+  }
+  function ownedByMe(rec) {
+    return typeof rec.id === "string" && rec.id.indexOf(owner() + "||") === 0;
+  }
 
   const gameStore = {
     put: function (rec) { return run(GAMES, "readwrite", function (s) { return s.put(rec, rec.id); }); },
@@ -650,7 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const foot = document.getElementById("libFooter");
 
     let games = [];
-    try { games = (await gameStore.all()) || []; } catch (e) { games = []; }
+    try { games = ((await gameStore.all()) || []).filter(ownedByMe); } catch (e) { games = []; }
 
     if (!games.length) { wrap.hidden = true; return; }
     wrap.hidden = false;
@@ -711,13 +721,13 @@ document.addEventListener("DOMContentLoaded", function () {
     foot.innerHTML = "";
     foot.append(document.createTextNode(
       games.length + (games.length === 1 ? " game" : " games") +
-      " stored in this browser" + usage + ". Nothing was uploaded. "));
+      " stored for " + (window.Lygo && Lygo.active() ? Lygo.active().name : "this browser") + usage + ". Nothing was uploaded. "));
     const clear = document.createElement("button");
     clear.type = "button";
     clear.className = "btn btn--ghost";
     clear.textContent = "Clear library";
     clear.addEventListener("click", async function () {
-      if (!confirm("Remove all " + games.length + " stored games from this browser?")) return;
+      if (!confirm("Remove all " + games.length + " stored games for this profile?")) return;
       await gameStore.clear();
       say("Library cleared.", "");
       renderLibrary();
@@ -819,7 +829,9 @@ document.addEventListener("DOMContentLoaded", function () {
     window.EJS_player        = "#screen";
     window.EJS_core          = core;
     window.EJS_gameUrl       = URL.createObjectURL(f);
-    window.EJS_gameName      = name;
+    /* Per-profile saves: EmulatorJS keys its save files off EJS_gameName, so
+       prefixing the profile is what keeps two players' saves apart. */
+    window.EJS_gameName      = (window.Lygo ? Lygo.saveNameFor(name) : name);
     window.EJS_pathtodata    = EJS_DATA;   // forward slashes. Backslashes 404 on the web.
     window.EJS_startOnLoaded = true;
     window.EJS_color         = "#00ff41";
@@ -864,6 +876,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const tip = document.getElementById("touchTip");
         if (tip) tip.hidden = false;
       }
+      startClock(name, core);
+      setupFavourite(name, core);
       watchdog();
     };
     s.onerror = function () {
@@ -872,6 +886,40 @@ document.addEventListener("DOMContentLoaded", function () {
       say("Couldn't load " + EJS_DATA + "loader.js. Check the path, or switch EJS_DATA to the CDN.", "error");
     };
     document.body.appendChild(s);
+  }
+
+  function setupFavourite(name, core) {
+    const btn = document.getElementById("favBtn");
+    if (!btn || !window.Lygo || !Lygo.active()) return;   // needs a profile
+    btn.hidden = false;
+    const paint = function () {
+      const on = Lygo.isFavourite(Lygo.active(), name, core);
+      btn.textContent = on ? "\u2605 Favourite" : "Add to favourites";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    };
+    paint();
+    btn.addEventListener("click", function () { Lygo.toggleFavourite(name, core); paint(); });
+  }
+
+  /* --------------------------------------------------------------------
+     Playtime clock. Counts only while the tab is visible, flushes every
+     30s and again when the page is hidden or closed, so a crash loses at
+     most half a minute.
+     -------------------------------------------------------------------- */
+  let clock = null;
+  function startClock(name, core) {
+    if (!window.Lygo) return;
+    let last = Date.now();
+    function flush() {
+      const now = Date.now();
+      if (document.visibilityState === "visible") {
+        Lygo.addPlaytime(name, core, Math.round((now - last) / 1000));
+      }
+      last = now;
+    }
+    clock = setInterval(flush, 30000);
+    document.addEventListener("visibilitychange", flush);
+    window.addEventListener("pagehide", flush);
   }
 
   /* --------------------------------------------------------------------

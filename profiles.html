@@ -48,6 +48,12 @@
     <p class="tagline">Pick who's playing. Each profile keeps its own recently played list and colours the site to taste. Stored in this browser — no account, no password.</p>
   </section>
 
+  <section id="cardSection" hidden aria-labelledby="card-h">
+    <h2 id="card-h">Player card</h2>
+    <p class="section-note" id="cardNote"></p>
+    <div class="playercard" id="playerCard"></div>
+  </section>
+
   <section aria-labelledby="who-h">
     <h2 id="who-h">Who's playing</h2>
     <p class="section-note" id="countNote">Select a profile to make it active.</p>
@@ -72,6 +78,12 @@
       <button class="btn" type="button" id="createBtn">Create profile</button>
       <p class="form-status" id="status" role="status"></p>
     </div>
+  </section>
+
+  <section aria-labelledby="fav-h" id="favSection" hidden>
+    <h2 id="fav-h">Favourites</h2>
+    <p class="section-note">Starred while playing.</p>
+    <ul class="recent" id="favList"></ul>
   </section>
 
   <section aria-labelledby="recent-h" id="recentSection" hidden>
@@ -189,7 +201,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const meta = document.createElement("p");
       const last = p.recent && p.recent[0];
-      meta.textContent = (p.plays || 0) + (p.plays === 1 ? " game launched" : " games launched")
+      meta.textContent = Lygo.humanTime(p.seconds) + " played · "
+                       + (p.plays || 0) + (p.plays === 1 ? " launch" : " launches")
                        + (last ? " · last: " + last.name : "");
 
       const row = document.createElement("div");
@@ -238,6 +251,72 @@ document.addEventListener("DOMContentLoaded", function () {
       listEl.appendChild(card);
     });
 
+    /* Player card for whoever is active */
+    const card = document.getElementById("playerCard");
+    const cardSec = document.getElementById("cardSection");
+    const who = Lygo.active();
+    if (who) {
+      const accent = Lygo.accentOf(who.accent);
+      cardSec.hidden = false;
+      document.getElementById("cardNote").textContent =
+        "Since " + new Date(who.created).toLocaleDateString() + ".";
+      card.style.borderColor = accent.hex;
+      card.textContent = "";
+
+      const glyph = document.createElement("span");
+      glyph.className = "playercard__avatar";
+      glyph.style.color = accent.hex;
+      glyph.textContent = who.avatar;
+
+      const nm = document.createElement("h3");
+      nm.className = "playercard__name";
+      nm.textContent = who.name;
+
+      const stats = document.createElement("dl");
+      stats.className = "stats";
+      const fave = (who.recent || []).slice().sort(function (a, b) {
+        return (b.seconds || 0) - (a.seconds || 0);
+      })[0];
+      [
+        ["Playtime", Lygo.humanTime(who.seconds)],
+        ["Games launched", String(who.plays || 0)],
+        ["Different games", String((who.recent || []).length)],
+        ["Favourites", String((who.favourites || []).length)],
+        ["Most played", fave ? fave.name : "\u2014"]
+      ].forEach(function (pair) {
+        const dt = document.createElement("dt"); dt.textContent = pair[0];
+        const dd = document.createElement("dd"); dd.textContent = pair[1];
+        stats.append(dt, dd);
+      });
+
+      card.append(glyph, nm, stats);
+    } else {
+      cardSec.hidden = true;
+    }
+
+    /* Favourites */
+    const favSec = document.getElementById("favSection");
+    const favList = document.getElementById("favList");
+    if (who && who.favourites && who.favourites.length) {
+      favSec.hidden = false;
+      favList.innerHTML = "";
+      who.favourites.forEach(function (key) {
+        const core = key.split("::")[0];
+        const name = key.slice(core.length + 2);
+        const li = document.createElement("li");
+        const n = document.createElement("span");
+        n.className = "recent__name";
+        n.textContent = "\u2605 " + name;
+        const m = document.createElement("span");
+        m.className = "recent__meta";
+        m.textContent = CORE_NAMES[core] || core;
+        li.append(n, m);
+        favList.appendChild(li);
+      });
+    } else {
+      favSec.hidden = true;
+    }
+
     /* Recently played for whoever is active */
     const cur = Lygo.active();
     if (cur && cur.recent && cur.recent.length) {
@@ -252,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const meta = document.createElement("span");
         meta.className = "recent__meta";
         meta.textContent = (CORE_NAMES[r.core] || r.core) + " · " +
-                           r.count + "x · " + ago(r.last);
+                           r.count + "x · " + Lygo.humanTime(r.seconds) + " · " + ago(r.last);
         li.append(name, meta);
         recentList.appendChild(li);
       });
