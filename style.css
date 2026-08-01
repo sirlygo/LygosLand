@@ -67,6 +67,30 @@ body {
   );
   opacity: 0.55;
 }
+
+/* On high-density screens a 4px repeating gradient gets resampled by the
+   browser and collapses into a few thick bands (moiré) instead of fine
+   scanlines. Scale the period with the pixel ratio so it stays a texture. */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .crt::before {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0 3px,
+      rgba(0, 0, 0, 0.28) 3px 6px
+    );
+    opacity: 0.4;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .crt::before {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0 4px,
+      rgba(0, 0, 0, 0.24) 4px 8px
+    );
+    opacity: 0.32;
+  }
+}
 .crt::after {
   background: radial-gradient(ellipse at center,
     rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.75) 100%);
@@ -610,9 +634,11 @@ input::placeholder { color: rgba(207, 232, 216, 0.35); }
     aspect-ratio: auto;
     min-height: 78vh;
   }
-  /* EmulatorJS positions its own controls; forcing 100% height on its child
-     broke that layout. Only the width is ours to set. */
-  .monitor--game #screen > div { width: 100% !important; }
+  /* DO NOT force width/height on anything inside #screen. EmulatorJS builds
+     its virtual gamepad out of nested divs, and a blanket `width: 100%`
+     stretches the round buttons into full-width grey bars. The container is
+     ours; everything inside it belongs to the emulator. */
+
   /* The CRT overlay sits at z-index 9000, above the emulator's menu. It
      ignores clicks, but the scanlines make small controls hard to read. */
   .crt::before { opacity: 0.25; }
