@@ -98,13 +98,11 @@
     <p class="section-note">New cores and features, occasionally.</p>
 
     <div class="panel">
-      <!--
-        TO MAKE THIS WORK: create a free form endpoint (Formspree, Buttondown,
-        Netlify Forms) and paste the URL into data-endpoint below.
-        Until you do, the button stays disabled instead of silently eating
-        people's email addresses like the old version did.
-      -->
-      <form id="signup" data-endpoint="" novalidate>
+      <!-- Signups go straight into Firestore (collection: "signups").
+           No third-party form service needed. The collection is create-only,
+           so nobody can read the list back from the browser — you view it in
+           the Firebase console. -->
+      <form id="signup" novalidate>
         <label for="su-name">Name</label>
         <input type="text" id="su-name" name="name" autocomplete="name" required>
 
@@ -142,22 +140,21 @@ document.addEventListener("DOMContentLoaded", function () {
     })();
   }
 
-  /* ---- Signup form ---- */
+  /* ---- Signup form ----
+     Writes to Firestore via auth.js. That module loads asynchronously, so
+     the button waits for it rather than failing on an early click. */
   const form   = document.getElementById("signup");
   const status = document.getElementById("su-status");
   const submit = document.getElementById("su-submit");
-  const endpoint = form.dataset.endpoint;
-
-  if (!endpoint) {
-    submit.disabled = true;
-    status.dataset.state = "";
-    status.textContent = "Signups aren't connected yet. Check back soon.";
-  }
 
   form.addEventListener("submit", async function (e) {
-    e.preventDefault();               // never let this reload and lose the data
-    if (!endpoint) return;
+    e.preventDefault();                 // never reload and lose the data
 
+    if (!window.LygoAuth) {
+      status.dataset.state = "";
+      status.textContent = "Still waking up — try again in a second.";
+      return;
+    }
     if (!form.checkValidity()) {
       status.dataset.state = "error";
       status.textContent = "Enter a name and a valid email address.";
@@ -166,21 +163,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     submit.disabled = true;
     status.dataset.state = "";
-    status.textContent = "Sending…";
+    status.textContent = "Sending\u2026";
 
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: new FormData(form)
-      });
-      if (!res.ok) throw new Error(res.status);
+    const res = await window.LygoAuth.subscribe(
+      document.getElementById("su-name").value,
+      document.getElementById("su-email").value
+    );
+
+    if (res.ok) {
       status.dataset.state = "ok";
       status.textContent = "You're on the list.";
       form.reset();
-    } catch (err) {
+    } else {
       status.dataset.state = "error";
-      status.textContent = "That didn't send. Try again in a minute.";
+      status.textContent = res.error;
       submit.disabled = false;
     }
   });

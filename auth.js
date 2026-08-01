@@ -19,7 +19,8 @@ import {
   signOut, onAuthStateChanged, sendPasswordResetEmail, deleteUser
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp
+  getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp,
+  collection, addDoc
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 /* Publishable by design. The apiKey is a project identifier, not a secret —
@@ -146,7 +147,40 @@ const LygoAuth = {
 
   syncNow: syncNow,
   push: push,
-  onChange: function (fn) { listeners.push(fn); if (ready) fn(currentUser); }
+  onChange: function (fn) { listeners.push(fn); if (ready) fn(currentUser); },
+
+  /* Mailing list. Separate from accounts on purpose — plenty of people will
+     want news without creating a login, and forcing an account to hear about
+     updates is a bad trade.
+
+     Writes to a `signups` collection that is create-only: nobody, signed in
+     or not, can read it back from the client. The list is visible to you in
+     the Firebase console. */
+  subscribe: async function (name, email) {
+    const e = String(email || "").trim();
+    const n = String(name || "").trim();
+    if (!n) return { ok: false, error: "Enter your name." };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) {
+      return { ok: false, error: "That doesn't look like an email address." };
+    }
+    if (e.length > 200 || n.length > 80) {
+      return { ok: false, error: "That's longer than expected — check it over." };
+    }
+    try {
+      await addDoc(collection(db, "signups"), {
+        name: n.slice(0, 80),
+        email: e.slice(0, 200).toLowerCase(),
+        created: serverTimestamp(),
+        uid: currentUser ? currentUser.uid : null
+      });
+      return { ok: true };
+    } catch (err) {
+      if (err.code === "permission-denied") {
+        return { ok: false, error: "Signups aren't switched on yet. Try again later." };
+      }
+      return { ok: false, error: friendly(err) };
+    }
+  }
 };
 
 function friendly(e) {
