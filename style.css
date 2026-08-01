@@ -285,11 +285,17 @@ html.bat-on .bat-dot.is-visible { opacity: 0.9; }
 .monitor__label {
   position: absolute;
   top: 0.5rem; left: 0.65rem;
+  right: 0.65rem;
   z-index: 2;
   font-size: 0.65rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bleed);
+  /* Long ROM filenames wrapped onto two lines and sat over the picture. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }
 .monitor__label::before {
   content: "●";
